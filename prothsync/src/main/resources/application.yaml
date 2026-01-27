@@ -1,3 +1,23 @@
 spring:
   application:
     name: ProthSync
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/prothsync
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: prothsync-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
+  access-token-expiration: 1800000
+  refresh-token-expiration: 604800000

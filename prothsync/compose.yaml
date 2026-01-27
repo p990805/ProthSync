@@ -1,9 +1,23 @@
 services:
-  postgres:
-    image: 'postgres:latest'
+  postgres-prothSync:
+    image: 'postgres:18'
+    container_name: postgres-prothSync
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_DB: prothSync
+      POSTGRES_USER: prothSync
+      POSTGRES_PASSWORD: prothSync
+      TZ: Asia/Seoul
+
+    volumes:
+      - prothSync_postgres_data:/var/lib/postgresql
     ports:
-      - '5432'
+      - "5432:5432"
+    networks:
+      - db-net
+
+networks:
+  db-net:
+    name: db-net
+
+volumes:
+  prothSync_postgres_data:
