@@ -3,6 +3,7 @@ package com.prothsync.prothsync.repository.impl;
 import com.prothsync.prothsync.entity.user.User;
 import com.prothsync.prothsync.repository.jpa.UserJpaRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -30,5 +31,15 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Optional<User> findById(Long userId) {
+        return userJpaRepository.findById(userId);
+    }
+
+    @Override
+    public Optional<User> findByUserName(String userName) {
+        return userJpaRepository.findByUserName(userName);
     }
 }

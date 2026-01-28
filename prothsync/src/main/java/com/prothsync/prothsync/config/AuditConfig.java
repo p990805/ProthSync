@@ -1,5 +1,6 @@
 package com.prothsync.prothsync.config;
 
+import com.prothsync.prothsync.security.CustomUserDetails;
 import java.util.Optional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,12 +27,13 @@ public class AuditConfig {
             if (authentication == null
                 || !authentication.isAuthenticated()
                 || authentication instanceof AnonymousAuthenticationToken) {
-                // 비인증 사용자인 경우 (회원가입 등)
                 return Optional.of(0L);
             }
 
-            // 인증된 사용자인 경우 사용자 ID 반환
-            // 추후 JWT에서 추출한 userId를 반환하도록 수정
+            if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+                return Optional.of(userDetails.getUserId());
+            }
+
             return Optional.of(0L);
         }
     }
