@@ -10,6 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
@@ -111,6 +112,22 @@ public class JwtTokenProvider {
     public long getRefreshTokenExpiration() {
         return refreshTokenExpiration;
     }
+
+    public Duration getRemainingTime(String token) {
+        Claims claims = parseClaims(token);
+        Date expiration = claims.getExpiration();
+        Date now = new Date();
+
+        long remainingMillis = expiration.getTime() - now.getTime();
+
+        if (remainingMillis <= 0) {
+            return Duration.ZERO;
+        }
+
+        return Duration.ofMillis(remainingMillis);
+    }
+
+
 
     private Claims parseClaims(String token) {
         return Jwts.parser()
