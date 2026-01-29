@@ -14,9 +14,23 @@ services:
     networks:
       - db-net
 
+  redis-prothSync:
+    image: 'redis:7-alpine'
+    container_name: redis-prothSync
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    environment:
+      TZ: ${TZ}
+    ports:
+      - "6379:6379"
+    networks:
+      - db-net
+    volumes:
+      - prothSync_redis_data:/data
+
 networks:
   db-net:
     name: db-net
 
 volumes:
   prothSync_postgres_data:
+  prothSync_redis_data:

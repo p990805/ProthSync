@@ -12,6 +12,7 @@ import com.prothsync.prothsync.exception.UserErrorCode;
 import com.prothsync.prothsync.repository.repository.RefreshTokenRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import com.prothsync.prothsync.security.JwtTokenProvider;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Transactional
     public User signup(SignupRequestDTO signupRequest) {
@@ -102,8 +104,13 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(Long userId) {
+    public void logout(Long userId, String accessToken) {
         refreshTokenRepository.deleteByUserId(userId);
+
+        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            Duration remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
+            tokenBlacklistService.addToBlackList(accessToken, remainingTime);
+        }
     }
 
     private void saveOrUpdateRefreshToken(Long userId, String refreshToken) {
