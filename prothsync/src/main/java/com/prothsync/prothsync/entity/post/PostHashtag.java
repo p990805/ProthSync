@@ -7,8 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Id;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,44 +16,37 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
-    name = "post_likes",
+    name = "post_hashtags",
     uniqueConstraints = {
         @UniqueConstraint(
-            name = "uk_post_likes_user_post",
-            columnNames = {"user_id","post_id"}
+            name = "uk_post_hashtags_post_hashtag",
+            columnNames = {"post_id", "hashtag_id"}
         )
     }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostLike extends BaseEntity {
+public class PostHashtag  extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeId;
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Long postHashtagId;
 
     @Column(name = "post_id", nullable = false)
     private Long postId;
 
-    private PostLike(Long userId, Long postId) {
-        this.userId = userId;
+    @Column(name = "hashtag_id", nullable = false)
+    private Long hashtagId;
+
+    private PostHashtag(Long postId, Long hashtagId) {
         this.postId = postId;
+        this.hashtagId = hashtagId;
     }
-
-    public static PostLike create(Long userId, Long postId) {
-        validateUserId(userId);
+    public static PostHashtag create(Long postId, Long hashtagId) {
         validatePostId(postId);
+        validateHashtagId(hashtagId);
 
-        return new PostLike(userId, postId);
-    }
-
-    private static void validateUserId(Long userId) {
-        if (userId == null) {
-            throw new BusinessException(PostErrorCode.POST_USER_ID_NULL);
-        }
+        return new PostHashtag(postId, hashtagId);
     }
 
     private static void validatePostId(Long postId) {
@@ -62,7 +55,10 @@ public class PostLike extends BaseEntity {
         }
     }
 
-    public boolean isOwnedBy(Long userId) {
-        return this.userId.equals(userId);
+    private static void validateHashtagId(Long hashtagId) {
+        if (hashtagId == null) {
+            throw new BusinessException(PostErrorCode.POST_HASHTAG_ID_NULL);
+        }
     }
+
 }
