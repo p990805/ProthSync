@@ -68,7 +68,7 @@ public class Post extends BaseEntity {
 
     private static void validateUserId(Long userId) {
         if (userId == null) {
-            throw new BusinessException(PostErrorCode.POST_USERID_NULL);
+            throw new BusinessException(PostErrorCode.POST_USER_ID_NULL);
         }
     }
 
