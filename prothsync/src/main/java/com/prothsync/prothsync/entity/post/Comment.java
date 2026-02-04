@@ -65,7 +65,7 @@ public class Comment extends BaseEntity {
             throw new BusinessException(PostErrorCode.POST_CONTENT_NULL);
         }
         if (content.length() > MAX_CONTENT_LENGTH) {
-            throw new IllegalArgumentException("댓글은 " + MAX_CONTENT_LENGTH + "자를 초과할 수 없습니다.");
+            throw new BusinessException(PostErrorCode.COMMENT_CONTENT_TOO_LONG);
         }
     }
 

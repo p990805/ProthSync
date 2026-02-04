@@ -47,7 +47,7 @@ public class Hashtag extends BaseEntity {
         String normalized = normalizeTagName(tagName);
 
         if (normalized.length() > MAX_TAG_LENGTH) {
-            throw new IllegalArgumentException("해시태그는 " + MAX_TAG_LENGTH + "자를 초과할 수 없습니다.");
+            throw new BusinessException(PostErrorCode.HASHTAG_TOO_LONG);
         }
 
         if (!TAG_PATTERN.matcher(normalized).matches()) {
