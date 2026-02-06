@@ -30,6 +30,9 @@ public class Hashtag extends BaseEntity {
     @Column(nullable = false, unique = true, length = 50)
     private String tagName;
 
+    @Column(nullable = false)
+    private int usageCount = 0;
+
     private Hashtag(String tagName) {
         this.tagName = normalizeTagName(tagName);
     }
@@ -63,6 +66,16 @@ public class Hashtag extends BaseEntity {
 
     public String getDisplayName() {
         return "#" + this.tagName;
+    }
+
+    public void incrementUsageCount() {
+        this.usageCount++;
+    }
+
+    public void decrementUsageCount() {
+        if (this.usageCount > 0) {
+            this.usageCount--;
+        }
     }
 
 }
