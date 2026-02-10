@@ -50,6 +50,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
                 // Hashtags - 공개 조회
                 .requestMatchers(HttpMethod.GET, "/api/hashtags/**").permitAll()
+                // Follow - 공개 조회
+                .requestMatchers(HttpMethod.GET, "/api/users/*/follow/followers").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/users/*/follow/followings").permitAll()
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
             )

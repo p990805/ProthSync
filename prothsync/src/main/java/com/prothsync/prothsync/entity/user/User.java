@@ -56,6 +56,12 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Column(nullable = false)
+    private int followerCount = 0;
+
+    @Column(nullable = false)
+    private int followingCount = 0;
+
     private User(String userName,
         String password,
         String nickName,
@@ -170,6 +176,26 @@ public class User extends BaseEntity {
     public void updateEmail(String newEmail) {
         validateEmail(newEmail);
         this.email = newEmail;
+    }
+
+    public void incrementFollowerCount() {
+        this.followerCount++;
+    }
+
+    public void decrementFollowerCount() {
+        if (this.followerCount > 0) {
+            this.followerCount--;
+        }
+    }
+
+    public void incrementFollowingCount() {
+        this.followingCount++;
+    }
+
+    public void decrementFollowingCount() {
+        if (this.followingCount > 0) {
+            this.followingCount--;
+        }
     }
 
     public void promoteToAdmin() {
