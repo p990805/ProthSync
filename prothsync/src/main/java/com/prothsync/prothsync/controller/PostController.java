@@ -1,5 +1,6 @@
 package com.prothsync.prothsync.controller;
 
+import com.prothsync.prothsync.controller.docs.PostControllerDocs;
 import com.prothsync.prothsync.dto.PostCreateRequestDTO;
 import com.prothsync.prothsync.dto.PostResponseDTO;
 import com.prothsync.prothsync.dto.PostSummaryResponseDTO;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
-public class PostController {
+public class PostController implements PostControllerDocs {
 
     private final PostService postService;
 
