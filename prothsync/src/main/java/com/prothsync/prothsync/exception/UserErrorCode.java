@@ -24,6 +24,9 @@ public enum UserErrorCode implements ErrorCode {
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
+    GEOCODING_FAILED(HttpStatus.BAD_REQUEST, "주소를 좌표로 변환할 수 없습니다. 올바른 주소를 입력해주세요."),
+    USER_COORDINATES_NOT_SET(HttpStatus.BAD_REQUEST, "사용자의 위치 정보가 설정되지 않았습니다."),
+    INVALID_SEARCH_RADIUS(HttpStatus.BAD_REQUEST, "검색 반경이 유효하지 않습니다. (1~50km)"),
     ;
 
     private final HttpStatus status;
