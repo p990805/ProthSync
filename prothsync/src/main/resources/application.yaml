@@ -31,4 +31,4 @@ jwt:
 kakao:
   rest-api-key: ${KAKAO_REST_API_KEY}
   geocoding:
-    base-url: https://dapis.kakao.com
+    base-url: https://dapi.kakao.com
