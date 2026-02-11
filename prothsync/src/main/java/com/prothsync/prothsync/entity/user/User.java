@@ -45,6 +45,12 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String address;
 
+    @Column
+    private Double latitude;
+
+    @Column
+    private Double longitude;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -176,6 +182,15 @@ public class User extends BaseEntity {
     public void updateEmail(String newEmail) {
         validateEmail(newEmail);
         this.email = newEmail;
+    }
+
+    public void updateCoordinates(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public boolean hasCoordinates() {
+        return this.latitude != null && this.longitude != null;
     }
 
     public void incrementFollowerCount() {
