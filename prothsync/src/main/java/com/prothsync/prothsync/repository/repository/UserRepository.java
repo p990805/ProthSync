@@ -1,6 +1,7 @@
 package com.prothsync.prothsync.repository.repository;
 
 import com.prothsync.prothsync.entity.user.User;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
@@ -11,4 +12,9 @@ public interface UserRepository {
     boolean existsByEmail(String email);
     Optional<User> findById(Long userId);
     Optional<User> findByUserName(String userName);
+
+    List<User> findNearbyUsers(double lat, double lng, double radiusKm,
+        Long excludeUserId, List<String> searchableTypes, int limit);
+    List<User> findNearbyUsersByType(double lat, double lng, double radiusKm,
+        Long excludeUserId, String userType, int limit);
 }
