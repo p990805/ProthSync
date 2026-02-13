@@ -48,7 +48,8 @@ public record SignupRequestDTO(
     @Email(message = "유효한 이메일 형식이 아닙니다.")
     String email,
 
-    @Schema(description = "사용자 유형", example = "DENTIST")
+    @Schema(description = "사용자 유형 (DENTAL_CLINIC: 치과, DENTAL_LAB: 기공소, DENTAL_TECHNICIAN: 기공사, STUDENT: 학생)",
+        example = "DENTAL_CLINIC")
     @NotNull(message = "사용자 유형은 필수입니다.")
     UserType userType
 ) {

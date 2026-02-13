@@ -27,6 +27,7 @@ public enum UserErrorCode implements ErrorCode {
     GEOCODING_FAILED(HttpStatus.BAD_REQUEST, "주소를 좌표로 변환할 수 없습니다. 올바른 주소를 입력해주세요."),
     USER_COORDINATES_NOT_SET(HttpStatus.BAD_REQUEST, "사용자의 위치 정보가 설정되지 않았습니다."),
     INVALID_SEARCH_RADIUS(HttpStatus.BAD_REQUEST, "검색 반경이 유효하지 않습니다. (1~50km)"),
+    UNSEARCHABLE_USER_TYPE(HttpStatus.BAD_REQUEST, "해당 사용자 유형은 위치 검색 대상이 아닙니다. (치과, 기공소만 검색 가능)"),
     ;
 
     private final HttpStatus status;

@@ -12,12 +12,15 @@ import com.prothsync.prothsync.exception.UserErrorCode;
 import com.prothsync.prothsync.repository.repository.RefreshTokenRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import com.prothsync.prothsync.security.JwtTokenProvider;
+import com.prothsync.prothsync.service.GeocodingService.GeocodingResult;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -27,6 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenBlacklistService tokenBlacklistService;
+    private final GeocodingService geocodingService;
 
     @Transactional
     public User signup(SignupRequestDTO signupRequest) {
@@ -45,6 +49,7 @@ public class AuthService {
             signupRequest.email(),
             signupRequest.userType()
         );
+        geocodeAndSetCoordinates(user, signupRequest.address());
 
         return userRepository.save(user);
     }
@@ -110,6 +115,18 @@ public class AuthService {
         if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
             Duration remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
             tokenBlacklistService.addToBlackList(accessToken, remainingTime);
+        }
+    }
+
+    private void geocodeAndSetCoordinates(User user, String address) {
+        GeocodingResult result = geocodingService.geocode(address);
+
+        if (result.success()) {
+            user.updateCoordinates(result.latitude(), result.longitude());
+            log.info("회원가입 지오코딩 성공 - 주소: {}, 위도: {}, 경도: {}",
+                address, result.latitude(), result.longitude());
+        } else {
+            log.warn("회원가입 지오코딩 실패 - 주소: {}. 좌표 없이 저장합니다.", address);
         }
     }
 

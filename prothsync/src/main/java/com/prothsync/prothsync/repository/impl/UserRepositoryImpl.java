@@ -3,6 +3,7 @@ package com.prothsync.prothsync.repository.impl;
 import com.prothsync.prothsync.entity.user.User;
 import com.prothsync.prothsync.repository.jpa.UserJpaRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean existsByUserName(String userName) {
-         return userJpaRepository.existsByUserName(userName);
+        return userJpaRepository.existsByUserName(userName);
     }
 
     @Override
@@ -41,5 +42,19 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByUserName(String userName) {
         return userJpaRepository.findByUserName(userName);
+    }
+
+    @Override
+    public List<User> findNearbyUsers(double lat, double lng, double radiusKm,
+        Long excludeUserId, List<String> searchableTypes, int limit) {
+        return userJpaRepository.findNearbyUsers(lat, lng, radiusKm, excludeUserId,
+            searchableTypes, limit);
+    }
+
+    @Override
+    public List<User> findNearbyUsersByType(double lat, double lng, double radiusKm,
+        Long excludeUserId, String userType, int limit) {
+        return userJpaRepository.findNearbyUsersByType(lat, lng, radiusKm, excludeUserId,
+            userType, limit);
     }
 }
