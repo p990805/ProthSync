@@ -53,6 +53,10 @@ public class SecurityConfig {
                 // Follow - 공개 조회
                 .requestMatchers(HttpMethod.GET, "/api/users/*/follow/followers").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/users/*/follow/followings").permitAll()
+                // Cases - 공개 조회 (의뢰 목록, 카테고리별 조회, 상세 조회)
+                .requestMatchers(HttpMethod.GET, "/api/cases").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/cases/category/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/cases/{caseRequestId}").permitAll()
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
             )
