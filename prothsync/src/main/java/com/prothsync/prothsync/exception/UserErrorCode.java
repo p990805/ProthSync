@@ -21,6 +21,7 @@ public enum UserErrorCode implements ErrorCode {
     USER_TYPE_IS_NULL(HttpStatus.BAD_REQUEST, "사용자 유형이 비어 있습니다."),
     USERNAME_TOO_LONG(HttpStatus.BAD_REQUEST, "아이디는 20자를 초과할 수 없습니다."),
     NICKNAME_TOO_LONG(HttpStatus.BAD_REQUEST, "닉네임은 10자를 초과할 수 없습니다."),
+    BIO_TOO_LONG(HttpStatus.BAD_REQUEST, "자기소개는 200자를 초과할 수 없습니다."),
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),

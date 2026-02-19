@@ -1,6 +1,9 @@
 package com.prothsync.prothsync.controller.docs;
 
+import com.prothsync.prothsync.dto.MyProfileResponseDTO;
 import com.prothsync.prothsync.dto.NearbyUserResponseDTO;
+import com.prothsync.prothsync.dto.ProfileUpdateRequestDTO;
+import com.prothsync.prothsync.dto.UserProfileResponseDTO;
 import com.prothsync.prothsync.entity.user.UserType;
 import com.prothsync.prothsync.exception.ErrorResponse;
 import com.prothsync.prothsync.security.CustomUserDetails;
@@ -15,9 +18,64 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "사용자", description = "사용자 정보 및 주변 검색 API")
+@Tag(name = "사용자", description = "사용자 프로필 및 주변 검색 API")
 @SecurityRequirement(name = "bearerAuth")
 public interface UserControllerDocs {
+
+    @Operation(
+        summary = "내 프로필 조회",
+        description = "현재 로그인한 사용자의 전체 프로필 정보를 조회합니다. (이메일, 생년월일, 좌표 등 민감 정보 포함)"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증 필요",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
+    ResponseEntity<MyProfileResponseDTO> getMyProfile(CustomUserDetails userDetails);
+
+    @Operation(
+        summary = "사용자 프로필 조회",
+        description = "특정 사용자의 공개 프로필 정보를 조회합니다. 로그인 사용자 기준 팔로우 여부를 포함합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(
+            responseCode = "404",
+            description = "사용자를 찾을 수 없음",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
+    ResponseEntity<UserProfileResponseDTO> getUserProfile(
+        @Parameter(description = "조회할 사용자 ID") Long userId,
+        CustomUserDetails userDetails
+    );
+
+    @Operation(
+        summary = "프로필 수정",
+        description = "현재 로그인한 사용자의 프로필을 수정합니다. 변경할 필드만 전달하면 됩니다 (부분 수정 지원). "
+            + "주소 변경 시 좌표가 자동으로 재계산됩니다."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "수정 성공"),
+        @ApiResponse(
+            responseCode = "400",
+            description = "유효하지 않은 입력값",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "409",
+            description = "닉네임 또는 이메일 중복",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
+    ResponseEntity<MyProfileResponseDTO> updateProfile(
+        CustomUserDetails userDetails,
+        ProfileUpdateRequestDTO request
+    );
+
 
     @Operation(
         summary = "주변 사업체 검색",

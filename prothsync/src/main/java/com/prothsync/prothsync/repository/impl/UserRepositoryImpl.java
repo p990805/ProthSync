@@ -45,6 +45,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByNickName(String nickName) {
+        return userJpaRepository.findByNickName(nickName);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userJpaRepository.findByEmail(email);
+    }
+
+    @Override
     public List<User> findNearbyUsers(double lat, double lng, double radiusKm,
         Long excludeUserId, List<String> searchableTypes, int limit) {
         return userJpaRepository.findNearbyUsers(lat, lng, radiusKm, excludeUserId,

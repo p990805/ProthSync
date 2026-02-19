@@ -26,6 +26,8 @@ public class User extends BaseEntity {
     private static final Pattern EMAIL_PATTERN =
         Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
+    private static final int BIO_MAX_LENGTH = 200;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -67,6 +69,12 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private int followingCount = 0;
+
+    @Column(length = 200)
+    private String bio;
+
+    @Column(length = 500)
+    private String profileImageUrl;
 
     private User(String userName,
         String password,
@@ -164,6 +172,12 @@ public class User extends BaseEntity {
         }
     }
 
+    private static void validateBio(String bio) {
+        if (bio != null && bio.length() > BIO_MAX_LENGTH) {
+            throw new BusinessException(UserErrorCode.BIO_TOO_LONG);
+        }
+    }
+
     public void updatePassword(String newPassword) {
         validatePassword(newPassword);
         this.password = newPassword;
@@ -182,6 +196,15 @@ public class User extends BaseEntity {
     public void updateEmail(String newEmail) {
         validateEmail(newEmail);
         this.email = newEmail;
+    }
+
+    public void updateBio(String newBio) {
+        validateBio(newBio);
+        this.bio = newBio;
+    }
+
+    public void updateProfileImageUrl(String newProfileImageUrl) {
+        this.profileImageUrl = newProfileImageUrl;
     }
 
     public void updateCoordinates(Double latitude, Double longitude) {
