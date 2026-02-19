@@ -17,6 +17,10 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUserName(String userName);
 
+    Optional<User> findByNickName(String nickName);
+
+    Optional<User> findByEmail(String email);
+
     /**
      * Haversine 공식을 이용한 주변 사용자 검색
      * 사업체(치과, 기공소)만 검색되도록 userType IN 조건 포함

@@ -12,6 +12,8 @@ public interface UserRepository {
     boolean existsByEmail(String email);
     Optional<User> findById(Long userId);
     Optional<User> findByUserName(String userName);
+    Optional<User> findByNickName(String nickName);
+    Optional<User> findByEmail(String email);
 
     List<User> findNearbyUsers(double lat, double lng, double radiusKm,
         Long excludeUserId, List<String> searchableTypes, int limit);
