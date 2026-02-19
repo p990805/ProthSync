@@ -31,9 +31,6 @@ public class UserService {
     private final FollowRepository followRepository;
     private final GeocodingService geocodingService;
 
-    // ============================================================
-    // 프로필 조회/수정
-    // ============================================================
 
     /**
      * 내 프로필 조회 (전체 정보 포함)
@@ -90,9 +87,6 @@ public class UserService {
         return MyProfileResponseDTO.from(user);
     }
 
-    // ============================================================
-    // 주변 사용자 검색
-    // ============================================================
 
     /**
      * 현재 사용자 기준 주변 사업체(치과, 기공소) 검색
@@ -181,10 +175,6 @@ public class UserService {
             throw new BusinessException(UserErrorCode.GEOCODING_FAILED);
         }
     }
-
-    // ============================================================
-    // Private helpers
-    // ============================================================
 
     private User findUserOrThrow(Long userId) {
         return userRepository.findById(userId)
