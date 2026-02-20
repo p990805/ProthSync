@@ -5,6 +5,7 @@ import com.prothsync.prothsync.entity.post.PostCategory;
 import com.prothsync.prothsync.entity.post.PostVisibility;
 import com.prothsync.prothsync.repository.jpa.PostJpaRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,5 +53,8 @@ public class PostRepositoryImpl implements PostRepository {
         return postJpaRepository.findAllByUserIdAndVisibility(userId, PostVisibility.PUBLIC, pageable);
     }
 
-
+    @Override
+    public Page<Post> findFeedPostsByUserIds(List<Long> userIds, Pageable pageable) {
+        return postJpaRepository.findAllByUserIdInAndVisibility(userIds, PostVisibility.PUBLIC, pageable);
+    }
 }

@@ -1,6 +1,7 @@
 package com.prothsync.prothsync.repository.repository;
 
 import com.prothsync.prothsync.entity.user.Follow;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,6 @@ public interface FollowRepository {
     int countByFollowingId(Long followingId);
 
     int countByFollowerId(Long followerId);
+
+    List<Long> findFollowingIdsByFollowerId(Long followerId);
 }

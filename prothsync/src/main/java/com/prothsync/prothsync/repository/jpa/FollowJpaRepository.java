@@ -1,10 +1,13 @@
 package com.prothsync.prothsync.repository.jpa;
 
 import com.prothsync.prothsync.entity.user.Follow;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface FollowJpaRepository extends JpaRepository<Follow, Long> {
 
@@ -19,4 +22,7 @@ public interface FollowJpaRepository extends JpaRepository<Follow, Long> {
     int countByFollowingId(Long followingId);
 
     int countByFollowerId(Long followerId);
+
+    @Query("SELECT f.followingId FROM Follow f WHERE f.followerId = :followerId")
+    List<Long> findFollowingIdsByFollowerId(@Param("followerId") Long followerId);
 }

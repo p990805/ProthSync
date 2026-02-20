@@ -3,6 +3,7 @@ package com.prothsync.prothsync.repository.impl;
 import com.prothsync.prothsync.entity.user.Follow;
 import com.prothsync.prothsync.repository.jpa.FollowJpaRepository;
 import com.prothsync.prothsync.repository.repository.FollowRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -53,5 +54,10 @@ public class FollowRepositoryImpl implements FollowRepository {
     @Override
     public int countByFollowerId(Long followerId) {
         return followJpaRepository.countByFollowerId(followerId);
+    }
+
+    @Override
+    public List<Long> findFollowingIdsByFollowerId(Long followerId) {
+        return followJpaRepository.findFollowingIdsByFollowerId(followerId);
     }
 }
