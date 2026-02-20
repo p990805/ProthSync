@@ -14,4 +14,11 @@ public record PageResponse<T>(
             PageableResponse.from(page)
         );
     }
+
+    public static <T> PageResponse<T> empty() {
+        return new PageResponse<>(
+            List.of(),
+            new PageableResponse(0, 0, 0, 0, false, true, true)
+        );
+    }
 }

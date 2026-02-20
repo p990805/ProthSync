@@ -2,6 +2,7 @@ package com.prothsync.prothsync.repository.repository;
 
 import com.prothsync.prothsync.entity.post.Post;
 import com.prothsync.prothsync.entity.post.PostCategory;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,5 +20,5 @@ public interface PostRepository {
 
     Page<Post> findAllByUserIdAndVisibilityPublic(Long userId, Pageable pageable);
 
-
+    Page<Post> findFeedPostsByUserIds(List<Long> userIds, Pageable pageable);
 }
