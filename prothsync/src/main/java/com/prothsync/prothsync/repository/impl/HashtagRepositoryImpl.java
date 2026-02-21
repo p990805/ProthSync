@@ -6,6 +6,8 @@ import com.prothsync.prothsync.repository.repository.HashtagRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -42,5 +44,10 @@ public class HashtagRepositoryImpl implements HashtagRepository {
     @Override
     public boolean existsByTagName(String tagName) {
         return hashtagJpaRepository.existsByTagName(tagName);
+    }
+
+    @Override
+    public Page<Hashtag> searchByTagNamePrefix(String keyword, Pageable pageable) {
+        return hashtagJpaRepository.findByTagNameStartingWithOrderByUsageCountDesc(keyword, pageable);
     }
 }

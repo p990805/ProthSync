@@ -3,6 +3,8 @@ package com.prothsync.prothsync.repository.repository;
 import com.prothsync.prothsync.entity.user.User;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserRepository {
 
@@ -19,4 +21,6 @@ public interface UserRepository {
         Long excludeUserId, List<String> searchableTypes, int limit);
     List<User> findNearbyUsersByType(double lat, double lng, double radiusKm,
         Long excludeUserId, String userType, int limit);
+
+    Page<User> searchByNickName(String keyword, Pageable pageable);
 }
