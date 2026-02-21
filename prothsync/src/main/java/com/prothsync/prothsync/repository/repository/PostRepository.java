@@ -21,4 +21,6 @@ public interface PostRepository {
     Page<Post> findAllByUserIdAndVisibilityPublic(Long userId, Pageable pageable);
 
     Page<Post> findFeedPostsByUserIds(List<Long> userIds, Pageable pageable);
+
+    Page<Post> findAllByHashtagIdAndVisibilityPublic(Long hashtagId, Pageable pageable);
 }

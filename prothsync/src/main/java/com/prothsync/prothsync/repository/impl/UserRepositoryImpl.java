@@ -6,6 +6,8 @@ import com.prothsync.prothsync.repository.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -66,5 +68,10 @@ public class UserRepositoryImpl implements UserRepository {
         Long excludeUserId, String userType, int limit) {
         return userJpaRepository.findNearbyUsersByType(lat, lng, radiusKm, excludeUserId,
             userType, limit);
+    }
+
+    @Override
+    public Page<User> searchByNickName(String keyword, Pageable pageable) {
+        return userJpaRepository.findByNickNameContainingIgnoreCase(keyword, pageable);
     }
 }

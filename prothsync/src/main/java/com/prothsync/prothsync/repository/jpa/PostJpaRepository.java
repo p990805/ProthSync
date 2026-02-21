@@ -25,4 +25,14 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
         @Param("visibility") PostVisibility visibility,
         Pageable pageable
     );
+
+    @Query("""
+        SELECT p FROM Post p
+        WHERE p.postId IN (
+            SELECT ph.postId FROM PostHashtag ph WHERE ph.hashtagId = :hashtagId
+        ) AND p.visibility = 'PUBLIC'
+        ORDER BY p.createdAt DESC
+        """)
+    Page<Post> findAllByHashtagIdAndVisibilityPublic(
+        @Param("hashtagId") Long hashtagId, Pageable pageable);
 }
