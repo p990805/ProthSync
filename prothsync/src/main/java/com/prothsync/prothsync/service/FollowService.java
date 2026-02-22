@@ -2,6 +2,8 @@ package com.prothsync.prothsync.service;
 
 import com.prothsync.prothsync.dto.FollowResponseDTO;
 import com.prothsync.prothsync.dto.FollowUserResponseDTO;
+import com.prothsync.prothsync.entity.notification.NotificationType;
+import com.prothsync.prothsync.entity.notification.ReferenceType;
 import com.prothsync.prothsync.entity.user.Follow;
 import com.prothsync.prothsync.entity.user.User;
 import com.prothsync.prothsync.exception.BusinessException;
@@ -23,6 +25,7 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public FollowResponseDTO toggleFollow(Long followerId, Long followingId) {
@@ -46,6 +49,11 @@ public class FollowService {
             following.incrementFollowerCount();
             userRepository.save(follower);
             userRepository.save(following);
+
+            notificationService.send(
+                NotificationType.FOLLOW, followerId, followingId,
+                followerId, ReferenceType.USER);
+
             return FollowResponseDTO.of(followingId, true, following.getFollowerCount());
         }
     }

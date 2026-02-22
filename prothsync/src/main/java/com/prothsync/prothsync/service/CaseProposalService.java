@@ -5,6 +5,8 @@ import com.prothsync.prothsync.dto.CaseProposalResponseDTO;
 import com.prothsync.prothsync.entity.caserequest.CaseProposal;
 import com.prothsync.prothsync.entity.caserequest.CaseRequest;
 import com.prothsync.prothsync.entity.caserequest.ProposalStatus;
+import com.prothsync.prothsync.entity.notification.NotificationType;
+import com.prothsync.prothsync.entity.notification.ReferenceType;
 import com.prothsync.prothsync.exception.BusinessException;
 import com.prothsync.prothsync.exception.CaseErrorCode;
 import com.prothsync.prothsync.exception.UserErrorCode;
@@ -26,6 +28,7 @@ public class CaseProposalService {
     private final CaseProposalRepository caseProposalRepository;
     private final CaseRequestRepository caseRequestRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public CaseProposalResponseDTO createProposal(
@@ -50,6 +53,10 @@ public class CaseProposalService {
 
         caseRequest.incrementProposalCount();
         caseRequestRepository.save(caseRequest);
+
+        notificationService.send(
+            NotificationType.PROPOSAL_RECEIVED, proposerId, caseRequest.getClientId(),
+            caseRequestId, ReferenceType.CASE_REQUEST);
 
         return CaseProposalResponseDTO.from(saved);
     }
@@ -89,6 +96,10 @@ public class CaseProposalService {
         caseRequest.startProgress();
         caseRequestRepository.save(caseRequest);
 
+        notificationService.send(
+            NotificationType.PROPOSAL_ACCEPTED, userId, proposal.getProposerId(),
+            proposalId, ReferenceType.CASE_PROPOSAL);
+
         return CaseProposalResponseDTO.from(proposal);
     }
 
@@ -101,6 +112,10 @@ public class CaseProposalService {
 
         proposal.reject();
         caseProposalRepository.save(proposal);
+
+        notificationService.send(
+            NotificationType.PROPOSAL_REJECTED, userId, proposal.getProposerId(),
+            proposalId, ReferenceType.CASE_PROPOSAL);
 
         return CaseProposalResponseDTO.from(proposal);
     }
@@ -125,6 +140,12 @@ public class CaseProposalService {
 
         caseRequest.complete();
         caseRequestRepository.save(caseRequest);
+
+        caseProposalRepository
+            .findAllByCaseRequestIdAndStatus(caseRequestId, ProposalStatus.ACCEPTED)
+            .forEach(proposal -> notificationService.send(
+                NotificationType.CASE_COMPLETED, userId, proposal.getProposerId(),
+                caseRequestId, ReferenceType.CASE_REQUEST));
     }
 
     private CaseRequest findCaseRequestOrThrow(Long caseRequestId) {

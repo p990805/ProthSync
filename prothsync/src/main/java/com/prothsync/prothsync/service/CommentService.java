@@ -3,6 +3,8 @@ package com.prothsync.prothsync.service;
 import com.prothsync.prothsync.dto.CommentCreateRequestDTO;
 import com.prothsync.prothsync.dto.CommentResponseDTO;
 import com.prothsync.prothsync.dto.CommentUpdateRequestDTO;
+import com.prothsync.prothsync.entity.notification.NotificationType;
+import com.prothsync.prothsync.entity.notification.ReferenceType;
 import com.prothsync.prothsync.entity.post.Comment;
 import com.prothsync.prothsync.entity.post.Post;
 import com.prothsync.prothsync.exception.BusinessException;
@@ -23,6 +25,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public CommentResponseDTO createComment(Long postId, Long userId, CommentCreateRequestDTO request) {
@@ -33,6 +36,10 @@ public class CommentService {
 
         post.incrementCommentCount();
         postRepository.save(post);
+
+        notificationService.send(
+            NotificationType.COMMENT, userId, post.getUserId(),
+            postId, ReferenceType.POST);
 
         return CommentResponseDTO.from(savedComment);
     }

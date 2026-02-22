@@ -1,6 +1,8 @@
 package com.prothsync.prothsync.service;
 
 import com.prothsync.prothsync.dto.LikeResponseDTO;
+import com.prothsync.prothsync.entity.notification.NotificationType;
+import com.prothsync.prothsync.entity.notification.ReferenceType;
 import com.prothsync.prothsync.entity.post.Post;
 import com.prothsync.prothsync.entity.post.PostLike;
 import com.prothsync.prothsync.exception.BusinessException;
@@ -18,6 +20,7 @@ public class LikeService {
 
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public LikeResponseDTO toggleLike(Long postId, Long userId) {
@@ -35,6 +38,10 @@ public class LikeService {
             postLikeRepository.save(postLike);
             post.incrementLikeCount();
             postRepository.save(post);
+
+            notificationService.send(
+                NotificationType.LIKE,userId,post.getUserId(),postId, ReferenceType.POST
+            );
             return LikeResponseDTO.of(postId, true, post.getLikeCount());
         }
     }
