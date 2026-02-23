@@ -42,6 +42,12 @@ public record MyProfileResponseDTO(
     @Schema(description = "팔로잉 수")
     int followingCount,
 
+    @Schema(description = "평균 평점")
+    double averageRating,
+
+    @Schema(description = "받은 리뷰 수")
+    int reviewCount,
+
     @Schema(description = "위도")
     Double latitude,
 
@@ -65,6 +71,8 @@ public record MyProfileResponseDTO(
             user.getUserType(),
             user.getFollowerCount(),
             user.getFollowingCount(),
+            user.getAverageRating(),
+            user.getReviewCount(),
             user.getLatitude(),
             user.getLongitude(),
             user.getCreatedAt()

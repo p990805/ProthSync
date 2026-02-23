@@ -76,6 +76,12 @@ public class User extends BaseEntity {
     @Column(length = 500)
     private String profileImageUrl;
 
+    @Column(nullable = false)
+    private double averageRating = 0.0;
+
+    @Column(nullable = false)
+    private int reviewCount = 0;
+
     private User(String userName,
         String password,
         String nickName,
@@ -246,5 +252,10 @@ public class User extends BaseEntity {
 
     public boolean isAdmin() {
         return this.userRole == UserRole.ADMIN;
+    }
+
+    public void updateRatingStats(double averageRating, int reviewCount) {
+        this.averageRating = averageRating;
+        this.reviewCount = reviewCount;
     }
 }

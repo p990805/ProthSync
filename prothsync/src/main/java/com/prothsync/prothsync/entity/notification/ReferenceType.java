@@ -5,5 +5,6 @@ public enum ReferenceType {
     COMMENT,
     CASE_REQUEST,
     CASE_PROPOSAL,
-    USER
+    USER,
+    REVIEW
 }
