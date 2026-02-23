@@ -35,6 +35,12 @@ public record UserProfileResponseDTO(
     @Schema(description = "팔로우 여부 (로그인 사용자 기준)")
     boolean isFollowing,
 
+    @Schema(description = "평균 평점")
+    double averageRating,
+
+    @Schema(description = "받은 리뷰 수")
+    int reviewCount,
+
     @Schema(description = "가입일")
     LocalDateTime createdAt
 ) {
@@ -50,6 +56,8 @@ public record UserProfileResponseDTO(
             user.getFollowerCount(),
             user.getFollowingCount(),
             isFollowing,
+            user.getAverageRating(),
+            user.getReviewCount(),
             user.getCreatedAt()
         );
     }

@@ -10,6 +10,7 @@ public enum NotificationType {
     LIKE("님이 게시글에 좋아요를 눌렀습니다."),
     COMMENT("님이 게시글에 댓글을 남겼습니다."),
     FOLLOW("님이 회원님을 팔로우했습니다."),
+    REVIEW_RECEIVED("님이 리뷰를 작성했습니다."),
 
     PROPOSAL_RECEIVED("님이 의뢰에 제안을 보냈습니다."),
     PROPOSAL_ACCEPTED("님이 제안을 수락했습니다."),
