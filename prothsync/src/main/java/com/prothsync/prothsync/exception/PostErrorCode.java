@@ -47,6 +47,8 @@ public enum PostErrorCode implements ErrorCode {
     HASHTAG_INVALID_PATTERN(HttpStatus.BAD_REQUEST, "해시태그는 한글, 영문, 숫자, 밑줄(_)만 사용 가능합니다."),
     HASHTAG_TOO_LONG(HttpStatus.BAD_REQUEST, "해시태그가 너무 깁니다.(최대 50자)"),
     HASHTAG_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "게시글당 해시태그는 최대 30개까지 등록 가능합니다."),
+
+    BOOKMARK_NOT_FOUND(HttpStatus.NOT_FOUND, "북마크 정보를 찾을 수 없습니다."),
     ;
 
     private final HttpStatus status;

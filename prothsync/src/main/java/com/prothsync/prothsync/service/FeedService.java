@@ -5,6 +5,7 @@ import com.prothsync.prothsync.dto.PostImageResponseDTO;
 import com.prothsync.prothsync.dto.PostResponseDTO;
 import com.prothsync.prothsync.entity.post.Post;
 import com.prothsync.prothsync.global.PageResponse;
+import com.prothsync.prothsync.repository.repository.BookmarkRepository;
 import com.prothsync.prothsync.repository.repository.FollowRepository;
 import com.prothsync.prothsync.repository.repository.PostLikeRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
@@ -24,6 +25,7 @@ public class FeedService {
     private final PostImageService postImageService;
     private final HashtagService hashtagService;
     private final PostLikeRepository postLikeRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional(readOnly = true)
     public PageResponse<PostResponseDTO> getFollowingFeed(Long userId, Pageable pageable) {
@@ -47,7 +49,9 @@ public class FeedService {
         List<HashtagResponseDTO> hashtagDtos = hashtagService.getHashtagsByPostId(post.getPostId());
         boolean isLiked = currentUserId != null
             && postLikeRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
+        boolean isBookmarked = currentUserId != null                                    // ★ 추가
+            && bookmarkRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
 
-        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked);
+        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked, isBookmarked); // ★ 파라미터 추가
     }
 }

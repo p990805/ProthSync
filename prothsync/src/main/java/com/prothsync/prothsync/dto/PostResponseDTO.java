@@ -18,6 +18,7 @@ public record PostResponseDTO(
     int commentCount,
     int viewCount,
     boolean isLiked,
+    boolean isBookmarked,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
@@ -26,7 +27,8 @@ public record PostResponseDTO(
         Post post,
         List<PostImageResponseDTO> images,
         List<HashtagResponseDTO> hashtags,
-        boolean isLiked
+        boolean isLiked,
+        boolean isBookmarked
     ) {
         return new PostResponseDTO(
             post.getPostId(),
@@ -40,6 +42,7 @@ public record PostResponseDTO(
             post.getCommentCount(),
             post.getViewCount(),
             isLiked,
+            isBookmarked,
             post.getCreatedAt(),
             post.getUpdatedAt()
         );
