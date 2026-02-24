@@ -14,6 +14,7 @@ import com.prothsync.prothsync.exception.BusinessException;
 import com.prothsync.prothsync.exception.PostErrorCode;
 import com.prothsync.prothsync.exception.UserErrorCode;
 import com.prothsync.prothsync.global.PageResponse;
+import com.prothsync.prothsync.repository.repository.BookmarkRepository;
 import com.prothsync.prothsync.repository.repository.PostLikeRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
@@ -34,6 +35,7 @@ public class PostService {
     private final HashtagService hashtagService;
     private final PostImageService postImageService;
     private final CommentService commentService;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public PostResponseDTO createPost(Long userId, PostCreateRequestDTO request) {
@@ -123,6 +125,7 @@ public class PostService {
         validatePostOwner(post, userId);
 
         postLikeRepository.deleteAllByPostId(postId);
+        bookmarkRepository.deleteAllByPostId(postId);
         commentService.deleteAllByPostId(postId);
         hashtagService.removeAllHashtagsFromPost(postId);
         postImageService.deleteAllByPostId(postId);
@@ -157,8 +160,10 @@ public class PostService {
         List<HashtagResponseDTO> hashtagDtos = hashtagService.getHashtagsByPostId(post.getPostId());
         boolean isLiked = currentUserId != null
             && postLikeRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
+        boolean isBookmarked = currentUserId != null
+            && bookmarkRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
 
-        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked);
+        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked, isBookmarked);
     }
 
     private PostResponseDTO toPostResponseDTO(
@@ -171,7 +176,7 @@ public class PostService {
             .map(HashtagResponseDTO::from)
             .toList();
 
-        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked);
+        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked, false);
     }
 
     private PageResponse<PostSummaryResponseDTO> toSummaryPageResponse(Page<Post> postPage) {
