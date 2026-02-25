@@ -26,10 +26,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final NotificationService notificationService;
+    private final BlockService blockService;
 
     @Transactional
     public CommentResponseDTO createComment(Long postId, Long userId, CommentCreateRequestDTO request) {
         Post post = findPostOrThrow(postId);
+
+        blockService.validateNotBlocked(userId, post.getUserId());
 
         Comment comment = Comment.createComment(postId, userId, request.content());
         Comment savedComment = commentRepository.save(comment);

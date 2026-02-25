@@ -5,10 +5,12 @@ import com.prothsync.prothsync.dto.HashtagResponseDTO;
 import com.prothsync.prothsync.dto.PostSummaryResponseDTO;
 import com.prothsync.prothsync.dto.UserSearchResponseDTO;
 import com.prothsync.prothsync.global.PageResponse;
+import com.prothsync.prothsync.security.CustomUserDetails;
 import com.prothsync.prothsync.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,9 +37,12 @@ public class SearchController implements SearchControllerDocs {
     @GetMapping("/posts")
     public ResponseEntity<PageResponse<PostSummaryResponseDTO>> searchPostsByHashtag(
         @RequestParam String hashtag,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Pageable pageable
     ) {
-        PageResponse<PostSummaryResponseDTO> response = searchService.searchPostsByHashtag(hashtag, pageable);
+        Long currentUserId = userDetails != null ? userDetails.getUserId() : null;
+        PageResponse<PostSummaryResponseDTO> response = searchService.searchPostsByHashtag(
+            hashtag, currentUserId, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -45,9 +50,12 @@ public class SearchController implements SearchControllerDocs {
     @GetMapping("/users")
     public ResponseEntity<PageResponse<UserSearchResponseDTO>> searchUsers(
         @RequestParam String keyword,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         Pageable pageable
     ) {
-        PageResponse<UserSearchResponseDTO> response = searchService.searchUsers(keyword, pageable);
+        Long currentUserId = userDetails != null ? userDetails.getUserId() : null;
+        PageResponse<UserSearchResponseDTO> response = searchService.searchUsers(
+            keyword, currentUserId, pageable);
         return ResponseEntity.ok(response);
     }
 }

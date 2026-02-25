@@ -5,6 +5,7 @@ import com.prothsync.prothsync.dto.PostImageResponseDTO;
 import com.prothsync.prothsync.dto.PostResponseDTO;
 import com.prothsync.prothsync.entity.post.Post;
 import com.prothsync.prothsync.global.PageResponse;
+import com.prothsync.prothsync.repository.repository.BlockRepository;
 import com.prothsync.prothsync.repository.repository.BookmarkRepository;
 import com.prothsync.prothsync.repository.repository.FollowRepository;
 import com.prothsync.prothsync.repository.repository.PostLikeRepository;
@@ -26,6 +27,7 @@ public class FeedService {
     private final HashtagService hashtagService;
     private final PostLikeRepository postLikeRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final BlockRepository blockRepository;
 
     @Transactional(readOnly = true)
     public PageResponse<PostResponseDTO> getFollowingFeed(Long userId, Pageable pageable) {
@@ -37,6 +39,7 @@ public class FeedService {
 
         Page<Post> postPage = postRepository.findFeedPostsByUserIds(followingIds, pageable);
 
+        List<Long> blockedIds = blockRepository.findBlockedIdsByBlockerId(userId);
         List<PostResponseDTO> feedPosts = postPage.getContent().stream()
             .map(post -> buildPostResponseDTO(post, userId))
             .toList();
