@@ -26,6 +26,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final BlockService blockService;
 
     @Transactional
     public FollowResponseDTO toggleFollow(Long followerId, Long followingId) {
@@ -43,6 +44,7 @@ public class FollowService {
             userRepository.save(following);
             return FollowResponseDTO.of(followingId, false, following.getFollowerCount());
         } else {
+            blockService.validateNotBlocked(followerId, followingId);
             Follow follow = Follow.create(followerId, followingId);
             followRepository.save(follow);
             follower.incrementFollowingCount();

@@ -21,6 +21,7 @@ public class LikeService {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
     private final NotificationService notificationService;
+    private final BlockService blockService;
 
     @Transactional
     public LikeResponseDTO toggleLike(Long postId, Long userId) {
@@ -34,6 +35,7 @@ public class LikeService {
             postRepository.save(post);
             return LikeResponseDTO.of(postId, false, post.getLikeCount());
         } else {
+            blockService.validateNotBlocked(userId, post.getUserId());
             PostLike postLike = PostLike.create(userId, postId);
             postLikeRepository.save(postLike);
             post.incrementLikeCount();
