@@ -23,4 +23,8 @@ public interface UserRepository {
         Long excludeUserId, String userType, int limit);
 
     Page<User> searchByNickName(String keyword, Pageable pageable);
+
+    Page<User> findAll(Pageable pageable);
+
+    long count();
 }

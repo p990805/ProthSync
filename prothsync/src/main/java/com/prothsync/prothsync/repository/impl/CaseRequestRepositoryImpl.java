@@ -65,4 +65,9 @@ public class CaseRequestRepositoryImpl implements CaseRequestRepository {
         return caseRequestJpaRepository.findNearbyCasesByCategory(
             lat, lng, radiusKm, excludeUserId, category.name(), limit);
     }
+
+    @Override
+    public long count() {
+        return caseRequestJpaRepository.count();
+    }
 }

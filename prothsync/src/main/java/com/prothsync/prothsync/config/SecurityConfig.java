@@ -57,6 +57,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/cases").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/cases/category/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/cases/{caseRequestId}").permitAll()
+                // Admin - 관리자 권한 필요
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
             )

@@ -29,4 +29,6 @@ public interface CaseRequestRepository {
 
     List<CaseRequest> findNearbyCasesByCategory(double lat, double lng, double radiusKm,
         Long excludeUserId, CaseCategory category, int limit);
+
+    long count();
 }

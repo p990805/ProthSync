@@ -74,4 +74,14 @@ public class UserRepositoryImpl implements UserRepository {
     public Page<User> searchByNickName(String keyword, Pageable pageable) {
         return userJpaRepository.findByNickNameContainingIgnoreCase(keyword, pageable);
     }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return userJpaRepository.findAll(pageable);
+    }
+
+    @Override
+    public long count() {
+        return userJpaRepository.count();
+    }
 }
