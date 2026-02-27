@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -81,6 +82,15 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private int reviewCount = 0;
+
+    @Column
+    private LocalDateTime suspendedAt;
+
+    @Column
+    private LocalDateTime suspendedUntil;
+
+    @Column(length = 500)
+    private String suspendReason;
 
     private User(String userName,
         String password,
@@ -257,5 +267,28 @@ public class User extends BaseEntity {
     public void updateRatingStats(double averageRating, int reviewCount) {
         this.averageRating = averageRating;
         this.reviewCount = reviewCount;
+    }
+
+
+    public void suspend(String reason, LocalDateTime until) {
+        this.suspendedAt = LocalDateTime.now();
+        this.suspendedUntil = until;
+        this.suspendReason = reason;
+    }
+
+    public void unsuspend() {
+        this.suspendedAt = null;
+        this.suspendedUntil = null;
+        this.suspendReason = null;
+    }
+
+    public boolean isSuspended() {
+        if (this.suspendedAt == null) {
+            return false;
+        }
+        if (this.suspendedUntil != null && this.suspendedUntil.isBefore(LocalDateTime.now())) {
+            return false;
+        }
+        return true;
     }
 }

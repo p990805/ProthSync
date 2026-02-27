@@ -62,4 +62,9 @@ public class PostRepositoryImpl implements PostRepository {
     public Page<Post> findAllByHashtagIdAndVisibilityPublic(Long hashtagId, Pageable pageable) {
         return postJpaRepository.findAllByHashtagIdAndVisibilityPublic(hashtagId, pageable);
     }
+
+    @Override
+    public long count() {
+        return postJpaRepository.count();
+    }
 }

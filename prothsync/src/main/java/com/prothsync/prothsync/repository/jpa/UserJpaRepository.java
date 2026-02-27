@@ -102,4 +102,6 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
     );
 
     Page<User> findByNickNameContainingIgnoreCase(String keyword, Pageable pageable);
+
+    Page<User> findAll(Pageable pageable);
 }

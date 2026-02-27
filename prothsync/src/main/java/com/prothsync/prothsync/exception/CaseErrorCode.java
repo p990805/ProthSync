@@ -17,6 +17,7 @@ public enum CaseErrorCode implements ErrorCode {
     CASE_BUDGET_INVALID(HttpStatus.BAD_REQUEST, "예산은 0보다 커야 합니다."),
 
     CASE_NOT_FOUND(HttpStatus.NOT_FOUND, "의뢰를 찾을 수 없습니다."),
+    CASE_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "의뢰요청을 찾을 수 없습니다."),
     CASE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "의뢰에 접근할 권한이 없습니다."),
 
     CASE_NOT_OPEN(HttpStatus.CONFLICT, "모집중인 의뢰가 아닙니다."),
