@@ -1,0 +1,185 @@
+@baseUrl = http://localhost:8080
+
+### ===========================
+### 1. 회원가입 - 사용자 1 (강남구 치과)
+### ===========================
+# @name signup1
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "dentist01",
+  "password": "Password123!",
+  "nickName": "강남치과",
+  "birthday": "1985-03-15",
+  "address": "서울특별시 강남구 테헤란로 123",
+  "email": "dentist01@example.com",
+  "userType": "DENTAL_CLINIC"
+}
+
+### ===========================
+### 2. 회원가입 - 사용자 2 (서초구 기공소)
+### ===========================
+# @name signup2
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "labowner01",
+  "password": "Password123!",
+  "nickName": "서초기공소",
+  "birthday": "1980-07-20",
+  "address": "서울특별시 송파구 오금로 21길 3",
+  "email": "labowner01@example.com",
+  "userType": "DENTAL_LAB"
+}
+
+### ===========================
+### 3. 회원가입 - 사용자 3 (잠실 기공사)
+### ===========================
+# @name signup3
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "tech01",
+  "password": "Password123!",
+  "nickName": "잠실기공사",
+  "birthday": "1990-11-05",
+  "address": "서울특별시 송파구 올림픽로 300",
+  "email": "tech01@example.com",
+  "userType": "DENTAL_TECHNICIAN"
+}
+
+### ===========================
+### 4. 회원가입 - 사용자 4 (부산 학생 - 멀리 있는 사용자)
+### ===========================
+# @name signup4
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "student01",
+  "password": "Password123!",
+  "nickName": "부산학생",
+  "birthday": "2000-05-10",
+  "address": "부산광역시 해운대구 해운대로 100",
+  "email": "student01@example.com",
+  "userType": "STUDENT"
+}
+
+### ===========================
+### 5. 회원가입 - 사용자 5 (역삼동 치과 - 사용자1 근처)
+### ===========================
+# @name signup5
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "dentist02",
+  "password": "Password123!",
+  "nickName": "역삼치과",
+  "birthday": "1988-09-25",
+  "address": "서울특별시 강남구 역삼로 50",
+  "email": "dentist02@example.com",
+  "userType": "DENTAL_CLINIC"
+}
+
+### ===========================
+### 6. 로그인 (사용자 1 - 강남 치과)
+### ===========================
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "dentist01",
+  "password": "Password123!"
+}
+
+> {%
+  client.global.set("accessToken", response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+%}
+### ===========================
+### 7. 주변 사업체 검색 (기본 반경 5km)
+###    → 치과, 기공소만 결과에 포함 (기공사, 학생 제외)
+### ===========================
+GET {{baseUrl}}/api/users/nearby
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 8. 주변 사업체 검색 (반경 10km)
+###    → 치과, 기공소만 결과에 포함
+### ===========================
+GET {{baseUrl}}/api/users/nearby?radiusKm=10&limit=10
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 9. 주변 치과 검색
+### ===========================
+GET {{baseUrl}}/api/users/nearby/DENTAL_CLINIC?radiusKm=10
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 10. 주변 기공소 검색
+### ===========================
+GET {{baseUrl}}/api/users/nearby/DENTAL_LAB?radiusKm=10
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 11. 주변 기공사 검색 (400 에러 예상 - 위치 검색 불가 유형)
+### ===========================
+GET {{baseUrl}}/api/users/nearby/DENTAL_TECHNICIAN?radiusKm=10
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 12. 주변 학생 검색 (400 에러 예상 - 위치 검색 불가 유형)
+### ===========================
+GET {{baseUrl}}/api/users/nearby/STUDENT?radiusKm=50
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 13. 좌표 재설정 (지오코딩 재시도)
+### ===========================
+POST {{baseUrl}}/api/users/me/geocode
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 14. 반경 초과 테스트 (51km - 에러 예상)
+### ===========================
+GET {{baseUrl}}/api/users/nearby?radiusKm=51
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 15. 반경 미만 테스트 (0.5km - 에러 예상)
+### ===========================
+GET {{baseUrl}}/api/users/nearby?radiusKm=0.5
+Authorization: Bearer {{accessToken}}
+
+### ===========================
+### 16. 인증 없이 주변 검색 (401 에러 예상)
+### ===========================
+GET {{baseUrl}}/api/users/nearby
+
+### ===========================
+### 17. 회원가입 응답에서 좌표 확인 (latitude, longitude)
+###     → signup1~5 응답에서 latitude, longitude가
+###       null이 아닌 실수값으로 나오면 지오코딩 성공
+### ===========================
+
+### ===========================
+### 기존 API 테스트 (변경 없음)
+### ===========================
+
+### 로그아웃
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{accessToken}}
+
+### 토큰 갱신
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
