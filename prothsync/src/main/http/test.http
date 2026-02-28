@@ -1,0 +1,39 @@
+@baseUrl = http://localhost:8080
+@accessToken = {{login.response.body.accessToken}}
+@refreshToken = {{login.response.body.refreshToken}}
+
+POST http://localhost:8080/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "testuser",
+  "password": "password123",
+  "nickName": "테스트1",
+  "birthday": "2026-01-27",
+  "address": "서울시 강남구",
+  "email": "test1@example.com",
+  "userType": "DENTIST"
+}
+
+
+### 로그인
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "testuser",
+  "password": "password123"
+}
+
+### 토큰 갱신
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": {{refreshToken}}
+}
+
+### 로그아웃
+POST {{baseUrl}}/api/auth/logout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwidXNlck5hbWUiOiJ0ZXN0dXNlciIsInVzZXJUeXBlIjoiREVOVElTVCIsInRva2VuVHlwZSI6IkFDQ0VTUyIsImlhdCI6MTc2OTYyMzE3MiwiZXhwIjoxNzY5NjI0OTcyfQ.W4XFeEMHceWWZVcQNUGU9DEtX8P6BdCsdLCtORwsEgf1N09Q0ucrAM4MjDy4L44H
