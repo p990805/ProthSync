@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<String> handleMethodArgumentNotValidException(
+    protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
         MethodArgumentNotValidException e) {
         log.warn("handleMethodArgumentNotValidException : {}", e.getMessage());
 
@@ -43,11 +43,11 @@ public class GlobalExceptionHandler {
             .orElse(WRONG_REQUEST);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(errorMessage);
+            .body(ErrorResponse.of("VALIDATION_ERROR", errorMessage));
     }
 
     @ExceptionHandler(BindException.class)
-    protected ResponseEntity<String> handleBindException(BindException e) {
+    protected ResponseEntity<ErrorResponse> handleBindException(BindException e) {
         log.warn("handleBindException : {}", e.getMessage());
 
         String errorMessage = e.getBindingResult().getFieldErrors().stream()
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
             .orElse(WRONG_REQUEST);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(errorMessage);
+            .body(ErrorResponse.of("VALIDATION_ERROR", errorMessage));
     }
 
     @ExceptionHandler({
@@ -66,42 +66,42 @@ public class GlobalExceptionHandler {
         MethodArgumentTypeMismatchException.class,
         HttpMessageNotReadableException.class
     })
-    protected ResponseEntity<String> handleValidException(Exception e) {
+    protected ResponseEntity<ErrorResponse> handleValidException(Exception e) {
         log.warn("handleValidException : {}", e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(WRONG_REQUEST);
+            .body(ErrorResponse.of("BAD_REQUEST", WRONG_REQUEST));
     }
 
     @ExceptionHandler({
         NoHandlerFoundException.class,
         NoResourceFoundException.class
     })
-    protected ResponseEntity<String> handleNotFoundException(Exception e) {
+    protected ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
         log.warn("handleNotFoundException : {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body("요청하신 리소스를 찾을 수 없습니다.");
+            .body(ErrorResponse.of("NOT_FOUND", "요청하신 리소스를 찾을 수 없습니다."));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    protected ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+    protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         log.warn("handleIllegalArgumentException : {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+            .body(ErrorResponse.of("BAD_REQUEST", e.getMessage()));
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    protected ResponseEntity<String> handleAuthorizationDeniedException(
+    protected ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(
         AuthorizationDeniedException e) {
         log.warn("handleAuthorizationDeniedException : {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .body(e.getMessage());
+            .body(ErrorResponse.of("ACCESS_DENIED", "접근 권한이 없습니다."));
     }
 
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<String> handleException(Exception e) {
+    protected ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.error("handleException : {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("서버 내부 오류가 발생했습니다.");
+            .body(ErrorResponse.of("INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다."));
     }
 }
