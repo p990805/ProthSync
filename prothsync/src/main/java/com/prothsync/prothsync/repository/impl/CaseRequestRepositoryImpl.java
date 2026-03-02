@@ -29,8 +29,9 @@ public class CaseRequestRepositoryImpl implements CaseRequestRepository {
     }
 
     @Override
-    public void delete(CaseRequest caseRequest) {
-        caseRequestJpaRepository.delete(caseRequest);
+    public void softDelete(CaseRequest caseRequest, Long userId) {
+        caseRequest.delete(userId);
+        caseRequestJpaRepository.save(caseRequest);
     }
 
     @Override

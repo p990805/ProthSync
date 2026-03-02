@@ -29,8 +29,9 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void delete(Post post) {
-        postJpaRepository.delete(post);
+    public void softDelete(Post post, Long userId) {
+        post.delete(userId);
+        postJpaRepository.save(post);
     }
 
     @Override

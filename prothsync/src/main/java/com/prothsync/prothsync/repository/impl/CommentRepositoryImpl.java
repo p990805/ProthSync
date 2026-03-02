@@ -31,13 +31,14 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public void delete(Comment comment) {
-        commentJpaRepository.delete(comment);
+    public void softDelete(Comment comment, Long userId) {
+        comment.delete(userId);
+        commentJpaRepository.save(comment);
     }
 
     @Override
-    public void deleteAllByPostId(Long postId) {
-        commentJpaRepository.deleteAllByPostId(postId);
+    public void softDeleteAllByPostId(Long postId, Long userId) {
+        commentJpaRepository.softDeleteAllByPostId(postId, userId);
     }
 
     @Override

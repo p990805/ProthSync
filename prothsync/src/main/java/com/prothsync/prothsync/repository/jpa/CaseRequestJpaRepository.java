@@ -29,6 +29,7 @@ public interface CaseRequestJpaRepository extends JpaRepository<CaseRequest, Lon
           AND cr.longitude IS NOT NULL
           AND cr.client_id != :excludeUserId
           AND cr.status = 'OPEN'
+          AND cr.deleted_at IS NULL
           AND (
             6371 * acos(
               LEAST(1.0, GREATEST(-1.0,
@@ -67,6 +68,7 @@ public interface CaseRequestJpaRepository extends JpaRepository<CaseRequest, Lon
           AND cr.client_id != :excludeUserId
           AND cr.status = 'OPEN'
           AND cr.category = :category
+          AND cr.deleted_at IS NULL
           AND (
             6371 * acos(
               LEAST(1.0, GREATEST(-1.0,

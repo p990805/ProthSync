@@ -80,12 +80,12 @@ public class CommentService {
         post.decrementCommentCount();
         postRepository.save(post);
 
-        commentRepository.delete(comment);
+        commentRepository.softDelete(comment, userId);
     }
 
     @Transactional
-    public void deleteAllByPostId(Long postId) {
-        commentRepository.deleteAllByPostId(postId);
+    public void softDeleteAllByPostId(Long postId, Long userId) {
+        commentRepository.softDeleteAllByPostId(postId, userId);
     }
 
     private Post findPostOrThrow(Long postId) {

@@ -108,29 +108,38 @@ public interface AdminControllerDocs {
     );
 
 
-    @Operation(summary = "게시글 강제 삭제", description = "관리자 권한으로 게시글을 삭제합니다. 관련 좋아요, 북마크, 댓글, 해시태그, 이미지가 함께 삭제됩니다.")
+    @Operation(summary = "게시글 강제 삭제", description = "관리자 권한으로 게시글을 soft delete 합니다. 관련 좋아요, 북마크는 hard delete, 댓글/이미지는 soft delete 됩니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "삭제 성공"),
         @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> deletePost(@Parameter(description = "게시글 ID") Long postId);
+    ResponseEntity<Void> deletePost(
+        @Parameter(description = "게시글 ID") Long postId,
+        CustomUserDetails userDetails
+    );
 
-    @Operation(summary = "댓글 강제 삭제", description = "관리자 권한으로 댓글을 삭제합니다. 게시글의 댓글 수가 자동으로 감소합니다.")
+    @Operation(summary = "댓글 강제 삭제", description = "관리자 권한으로 댓글을 soft delete 합니다. 게시글의 댓글 수가 자동으로 감소합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "삭제 성공"),
         @ApiResponse(responseCode = "404", description = "댓글을 찾을 수 없음",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> deleteComment(@Parameter(description = "댓글 ID") Long commentId);
+    ResponseEntity<Void> deleteComment(
+        @Parameter(description = "댓글 ID") Long commentId,
+        CustomUserDetails userDetails
+    );
 
-    @Operation(summary = "의뢰 강제 삭제", description = "관리자 권한으로 의뢰를 삭제합니다.")
+    @Operation(summary = "의뢰 강제 삭제", description = "관리자 권한으로 의뢰를 soft delete 합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "삭제 성공"),
         @ApiResponse(responseCode = "404", description = "의뢰를 찾을 수 없음",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> deleteCaseRequest(@Parameter(description = "의뢰 ID") Long caseRequestId);
+    ResponseEntity<Void> deleteCaseRequest(
+        @Parameter(description = "의뢰 ID") Long caseRequestId,
+        CustomUserDetails userDetails
+    );
 
 
     @Operation(summary = "대시보드 통계 조회", description = "총 사용자 수, 게시글 수, 의뢰 수, 신고 현황 등 플랫폼 전체 통계를 조회합니다.")

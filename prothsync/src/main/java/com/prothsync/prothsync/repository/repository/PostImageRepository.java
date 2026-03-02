@@ -18,7 +18,7 @@ public interface PostImageRepository {
 
     void delete(PostImage postImage);
 
-    void deleteAllByPostId(Long postId);
+    void softDeleteAllByPostId(Long postId, Long userId);
 
     int countByPostId(Long postId);
 }

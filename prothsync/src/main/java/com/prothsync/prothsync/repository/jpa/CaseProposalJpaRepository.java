@@ -6,6 +6,9 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CaseProposalJpaRepository extends JpaRepository<CaseProposal, Long> {
 
@@ -19,5 +22,7 @@ public interface CaseProposalJpaRepository extends JpaRepository<CaseProposal, L
 
     long countByCaseRequestId(Long caseRequestId);
 
-    void deleteAllByCaseRequestId(Long caseRequestId);
+    @Modifying
+    @Query("UPDATE CaseProposal cp SET cp.deletedAt = CURRENT_TIMESTAMP, cp.deletedBy = :userId WHERE cp.caseRequestId = :caseRequestId AND cp.deletedAt IS NULL")
+    int softDeleteAllByCaseRequestId(@Param("caseRequestId") Long caseRequestId, @Param("userId") Long userId);
 }

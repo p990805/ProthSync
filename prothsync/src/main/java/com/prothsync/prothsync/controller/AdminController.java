@@ -100,25 +100,28 @@ public class AdminController implements AdminControllerDocs {
 
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(
-        @PathVariable Long postId
+        @PathVariable Long postId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        adminService.deletePost(postId);
+        adminService.deletePost(postId, userDetails.getUserId());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
-        @PathVariable Long commentId
+        @PathVariable Long commentId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        adminService.deleteComment(commentId);
+        adminService.deleteComment(commentId, userDetails.getUserId());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/cases/{caseRequestId}")
     public ResponseEntity<Void> deleteCaseRequest(
-        @PathVariable Long caseRequestId
+        @PathVariable Long caseRequestId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        adminService.deleteCaseRequest(caseRequestId);
+        adminService.deleteCaseRequest(caseRequestId, userDetails.getUserId());
         return ResponseEntity.noContent().build();
     }
 

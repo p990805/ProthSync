@@ -11,7 +11,7 @@ public interface PostRepository {
 
     Post save(Post post);
     Optional<Post> findById(Long postId);
-    void delete(Post post);
+    void softDelete(Post post, Long userId);
     Page<Post> findAllByVisibilityPublic(Pageable pageable);
 
     Page<Post> findAllByUserId(Long userId, Pageable pageable);
