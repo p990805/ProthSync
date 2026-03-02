@@ -10,10 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface NotificationJpaRepository extends JpaRepository<Notification, Long> {
 
-    Page<Notification> findByRecipientIdAndDeletedAtIsNullOrderByCreatedAtDesc(
+    Page<Notification> findByRecipientIdOrderByCreatedAtDesc(
         Long recipientId, Pageable pageable);
 
-    int countByRecipientIdAndIsReadFalseAndDeletedAtIsNull(Long recipientId);
+    int countByRecipientIdAndIsReadFalse(Long recipientId);
 
     @Modifying
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.recipientId = :recipientId AND n.isRead = false AND n.deletedAt IS NULL")

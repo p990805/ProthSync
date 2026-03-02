@@ -13,9 +13,9 @@ public interface CommentRepository {
 
     Page<Comment> findAllByPostId(Long postId, Pageable pageable);
 
-    void delete(Comment comment);
+    void softDelete(Comment comment, Long userId);
 
-    void deleteAllByPostId(Long postId);
+    void softDeleteAllByPostId(Long postId, Long userId);
 
     int countByPostId(Long postId);
 }

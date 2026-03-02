@@ -13,7 +13,7 @@ public interface CaseProposalRepository {
 
     Optional<CaseProposal> findById(Long proposalId);
 
-    void delete(CaseProposal proposal);
+    void softDelete(CaseProposal proposal, Long userId);
 
     Page<CaseProposal> findAllByCaseRequestId(Long caseRequestId, Pageable pageable);
 
@@ -25,5 +25,5 @@ public interface CaseProposalRepository {
 
     long countByCaseRequestId(Long caseRequestId);
 
-    void deleteAllByCaseRequestId(Long caseRequestId);
+    void softDeleteAllByCaseRequestId(Long caseRequestId, Long userId);
 }

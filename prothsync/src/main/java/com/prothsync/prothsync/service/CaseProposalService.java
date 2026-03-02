@@ -130,7 +130,7 @@ public class CaseProposalService {
         caseRequest.decrementProposalCount();
         caseRequestRepository.save(caseRequest);
 
-        caseProposalRepository.delete(proposal);
+        caseProposalRepository.softDelete(proposal, userId);
     }
 
     @Transactional

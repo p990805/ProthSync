@@ -40,8 +40,8 @@ public class PostImageService {
     }
 
     @Transactional
-    public List<PostImage> replaceImages(Long postId, List<String> imageUrls) {
-        deleteAllByPostId(postId);
+    public List<PostImage> replaceImages(Long postId, Long userId, List<String> imageUrls) {
+        softDeleteAllByPostId(postId, userId);
         return saveImages(postId, imageUrls);
     }
 
@@ -59,9 +59,9 @@ public class PostImageService {
     }
 
     @Transactional
-    public void deleteAllByPostId(Long postId) {
+    public void softDeleteAllByPostId(Long postId, Long userId) {
         // TODO: S3 도입 시 실제 파일 삭제 처리 추가
-        postImageRepository.deleteAllByPostId(postId);
+        postImageRepository.softDeleteAllByPostId(postId, userId);
     }
 
     private void validateImageCount(List<String> imageUrls) {

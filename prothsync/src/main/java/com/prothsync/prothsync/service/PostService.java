@@ -110,7 +110,7 @@ public class PostService {
         postRepository.save(post);
 
         if (request.imageUrls() != null) {
-            postImageService.replaceImages(postId, request.imageUrls());
+            postImageService.replaceImages(postId, userId, request.imageUrls());
         }
         if (request.hashtagNames() != null) {
             hashtagService.replaceHashtagsForPost(postId, request.hashtagNames());
@@ -126,10 +126,10 @@ public class PostService {
 
         postLikeRepository.deleteAllByPostId(postId);
         bookmarkRepository.deleteAllByPostId(postId);
-        commentService.deleteAllByPostId(postId);
+        commentService.softDeleteAllByPostId(postId, userId);
         hashtagService.removeAllHashtagsFromPost(postId);
-        postImageService.deleteAllByPostId(postId);
-        postRepository.delete(post);
+        postImageService.softDeleteAllByPostId(postId, userId);
+        postRepository.softDelete(post, userId);
     }
 
 

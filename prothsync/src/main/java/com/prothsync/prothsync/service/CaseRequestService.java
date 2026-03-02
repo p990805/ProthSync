@@ -127,8 +127,8 @@ public class CaseRequestService {
         CaseRequest caseRequest = findCaseRequestOrThrow(caseRequestId);
         validateOwner(caseRequest, userId);
 
-        caseProposalRepository.deleteAllByCaseRequestId(caseRequestId);
-        caseRequestRepository.delete(caseRequest);
+        caseProposalRepository.softDeleteAllByCaseRequestId(caseRequestId, userId);
+        caseRequestRepository.softDelete(caseRequest, userId);
     }
 
     @Transactional(readOnly = true)

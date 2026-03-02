@@ -14,7 +14,7 @@ public interface CaseRequestRepository {
 
     Optional<CaseRequest> findById(Long caseRequestId);
 
-    void delete(CaseRequest caseRequest);
+    void softDelete(CaseRequest caseRequest, Long userId);
 
     Page<CaseRequest> findAllByStatus(CaseStatus status, Pageable pageable);
 

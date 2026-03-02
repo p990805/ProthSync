@@ -45,8 +45,8 @@ public class PostImageRepositoryImpl implements PostImageRepository {
     }
 
     @Override
-    public void deleteAllByPostId(Long postId) {
-        postImageJpaRepository.deleteAllByPostId(postId);
+    public void softDeleteAllByPostId(Long postId, Long userId) {
+        postImageJpaRepository.softDeleteAllByPostId(postId, userId);
     }
 
     @Override

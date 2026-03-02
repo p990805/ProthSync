@@ -137,7 +137,7 @@ public class ReviewService {
 
         Long revieweeId = review.getRevieweeId();
 
-        reviewRepository.delete(review);
+        reviewRepository.softDelete(review, userId);
 
         // 삭제 후 대상자의 평균 평점 갱신
         updateUserRatingStats(revieweeId);

@@ -11,7 +11,7 @@ public interface ReviewRepository {
 
     Optional<Review> findById(Long reviewId);
 
-    void delete(Review review);
+    void softDelete(Review review, Long userId);
 
     boolean existsByCaseRequestId(Long caseRequestId);
 

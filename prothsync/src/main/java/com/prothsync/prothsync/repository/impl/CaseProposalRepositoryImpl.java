@@ -28,8 +28,9 @@ public class CaseProposalRepositoryImpl implements CaseProposalRepository {
     }
 
     @Override
-    public void delete(CaseProposal proposal) {
-        caseProposalJpaRepository.delete(proposal);
+    public void softDelete(CaseProposal proposal, Long userId) {
+        proposal.delete(userId);
+        caseProposalJpaRepository.save(proposal);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class CaseProposalRepositoryImpl implements CaseProposalRepository {
     }
 
     @Override
-    public void deleteAllByCaseRequestId(Long caseRequestId) {
-        caseProposalJpaRepository.deleteAllByCaseRequestId(caseRequestId);
+    public void softDeleteAllByCaseRequestId(Long caseRequestId, Long userId) {
+        caseProposalJpaRepository.softDeleteAllByCaseRequestId(caseRequestId, userId);
     }
 }

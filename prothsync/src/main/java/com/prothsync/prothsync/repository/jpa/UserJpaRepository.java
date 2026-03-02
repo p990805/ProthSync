@@ -33,6 +33,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
           AND u.longitude IS NOT NULL
           AND u.user_id != :excludeUserId
           AND u.user_type IN (:searchableTypes)
+          AND u.deleted_at IS NULL
           AND (
             6371 * acos(
               LEAST(1.0, GREATEST(-1.0,
@@ -72,6 +73,7 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
           AND u.longitude IS NOT NULL
           AND u.user_id != :excludeUserId
           AND u.user_type = :userType
+          AND u.deleted_at IS NULL
           AND (
             6371 * acos(
               LEAST(1.0, GREATEST(-1.0,

@@ -148,20 +148,20 @@ public class AdminService {
 
 
     @Transactional
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, Long adminUserId) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
 
         postLikeRepository.deleteAllByPostId(postId);
         bookmarkRepository.deleteAllByPostId(postId);
-        commentService.deleteAllByPostId(postId);
+        commentService.softDeleteAllByPostId(postId, adminUserId);
         hashtagService.removeAllHashtagsFromPost(postId);
-        postImageService.deleteAllByPostId(postId);
-        postRepository.delete(post);
+        postImageService.softDeleteAllByPostId(postId, adminUserId);
+        postRepository.softDelete(post, adminUserId);
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, Long adminUserId) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new BusinessException(PostErrorCode.COMMENT_NOT_FOUND));
 
@@ -171,15 +171,15 @@ public class AdminService {
         post.decrementCommentCount();
         postRepository.save(post);
 
-        commentRepository.delete(comment);
+        commentRepository.softDelete(comment, adminUserId);
     }
 
     @Transactional
-    public void deleteCaseRequest(Long caseRequestId) {
+    public void deleteCaseRequest(Long caseRequestId, Long adminUserId) {
         CaseRequest caseRequest = caseRequestRepository.findById(caseRequestId)
             .orElseThrow(() -> new BusinessException(CaseErrorCode.CASE_REQUEST_NOT_FOUND));
 
-        caseRequestRepository.delete(caseRequest);
+        caseRequestRepository.softDelete(caseRequest, adminUserId);
     }
 
 

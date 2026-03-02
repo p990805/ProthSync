@@ -26,8 +26,9 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     }
 
     @Override
-    public void delete(Review review) {
-        reviewJpaRepository.delete(review);
+    public void softDelete(Review review, Long userId) {
+        review.delete(userId);
+        reviewJpaRepository.save(review);
     }
 
     @Override

@@ -27,13 +27,13 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
     @Override
     public Page<Notification> findByRecipientId(Long recipientId, Pageable pageable) {
-        return notificationJpaRepository.findByRecipientIdAndDeletedAtIsNullOrderByCreatedAtDesc(
+        return notificationJpaRepository.findByRecipientIdOrderByCreatedAtDesc(
             recipientId, pageable);
     }
 
     @Override
     public int countUnreadByRecipientId(Long recipientId) {
-        return notificationJpaRepository.countByRecipientIdAndIsReadFalseAndDeletedAtIsNull(recipientId);
+        return notificationJpaRepository.countByRecipientIdAndIsReadFalse(recipientId);
     }
 
     @Override
