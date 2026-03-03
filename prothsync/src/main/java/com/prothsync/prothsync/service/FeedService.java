@@ -10,7 +10,9 @@ import com.prothsync.prothsync.repository.repository.BookmarkRepository;
 import com.prothsync.prothsync.repository.repository.FollowRepository;
 import com.prothsync.prothsync.repository.repository.PostLikeRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,9 +39,17 @@ public class FeedService {
             return PageResponse.empty();
         }
 
-        Page<Post> postPage = postRepository.findFeedPostsByUserIds(followingIds, pageable);
+        Set<Long> blockedIdSet = new HashSet<>(blockRepository.findBlockedIdsByBlockerId(userId));
+        List<Long> filteredFollowingIds = followingIds.stream()
+            .filter(id -> !blockedIdSet.contains(id))
+            .toList();
 
-        List<Long> blockedIds = blockRepository.findBlockedIdsByBlockerId(userId);
+        if (filteredFollowingIds.isEmpty()) {
+            return PageResponse.empty();
+        }
+
+        Page<Post> postPage = postRepository.findFeedPostsByUserIds(filteredFollowingIds, pageable);
+
         List<PostResponseDTO> feedPosts = postPage.getContent().stream()
             .map(post -> buildPostResponseDTO(post, userId))
             .toList();
