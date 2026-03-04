@@ -293,4 +293,8 @@ public class User extends BaseEntity {
         }
         return true;
     }
+
+    public boolean hasExpiredSuspension() {
+        return this.suspendedAt != null && !this.isSuspended();
+    }
 }
