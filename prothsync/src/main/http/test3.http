@@ -1,0 +1,1059 @@
+@baseUrl = http://localhost:8080
+
+###############################################################################
+###  ProthSync 전체 API 통합 테스트
+###  실행 순서대로 위에서 아래로 쏘면 됩니다.
+###  ExecutionTimeConfig AOP가 각 API 응답시간을 서버 로그에 찍어줍니다.
+###############################################################################
+
+
+### ===================================================================
+###  SECTION 1: 회원가입 (5명)
+### ===================================================================
+
+### 1-1. 회원가입 - 사용자1 (강남 치과)
+# @name signup1
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "dentist01",
+  "password": "Password123!",
+  "nickName": "강남치과",
+  "birthday": "1985-03-15",
+  "address": "서울특별시 강남구 테헤란로 123",
+  "email": "dentist01@example.com",
+  "userType": "DENTAL_CLINIC"
+}
+
+### 1-2. 회원가입 - 사용자2 (송파 기공소)
+# @name signup2
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "labowner01",
+  "password": "Password123!",
+  "nickName": "서초기공소",
+  "birthday": "1980-07-20",
+  "address": "서울특별시 송파구 오금로 21길 3",
+  "email": "labowner01@example.com",
+  "userType": "DENTAL_LAB"
+}
+
+### 1-3. 회원가입 - 사용자3 (잠실 기공사)
+# @name signup3
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "tech01",
+  "password": "Password123!",
+  "nickName": "잠실기공사",
+  "birthday": "1990-11-05",
+  "address": "서울특별시 송파구 올림픽로 300",
+  "email": "tech01@example.com",
+  "userType": "DENTAL_TECHNICIAN"
+}
+
+### 1-4. 회원가입 - 사용자4 (부산 학생)
+# @name signup4
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "student01",
+  "password": "Password123!",
+  "nickName": "부산학생",
+  "birthday": "2000-05-10",
+  "address": "부산광역시 해운대구 해운대로 100",
+  "email": "student01@example.com",
+  "userType": "STUDENT"
+}
+
+### 1-5. 회원가입 - 사용자5 (역삼 치과)
+# @name signup5
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "dentist02",
+  "password": "Password123!",
+  "nickName": "역삼치과",
+  "birthday": "1988-09-25",
+  "address": "서울특별시 강남구 역삼로 50",
+  "email": "dentist02@example.com",
+  "userType": "DENTAL_CLINIC"
+}
+
+
+### ===================================================================
+###  SECTION 2: 로그인
+### ===================================================================
+
+### 2-1. 로그인 - 사용자1 (dentist01)
+# @name loginUser1
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "dentist01",
+  "password": "Password123!"
+}
+
+> {%
+  client.global.set("token1", response.body.accessToken);
+  client.global.set("refresh1", response.body.refreshToken);
+  client.global.set("userId1", response.body.userId);
+%}
+
+### 2-2. 로그인 - 사용자2 (labowner01)
+# @name loginUser2
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "labowner01",
+  "password": "Password123!"
+}
+
+> {%
+  client.global.set("token2", response.body.accessToken);
+  client.global.set("refresh2", response.body.refreshToken);
+  client.global.set("userId2", response.body.userId);
+%}
+
+### 2-3. 로그인 - 사용자3 (tech01)
+# @name loginUser3
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "tech01",
+  "password": "Password123!"
+}
+
+> {%
+  client.global.set("token3", response.body.accessToken);
+  client.global.set("refresh3", response.body.refreshToken);
+  client.global.set("userId3", response.body.userId);
+%}
+
+### 2-4. 로그인 - 사용자4 (student01)
+# @name loginUser4
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "userName": "student01",
+  "password": "Password123!"
+}
+
+> {%
+  client.global.set("token4", response.body.accessToken);
+  client.global.set("refresh4", response.body.refreshToken);
+  client.global.set("userId4", response.body.userId);
+%}
+
+
+### ===================================================================
+###  SECTION 3: 토큰 갱신 테스트
+### ===================================================================
+
+### 3-1. 토큰 갱신
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh1}}"
+}
+
+> {%
+  client.global.set("token1", response.body.accessToken);
+  client.global.set("refresh1", response.body.refreshToken);
+%}
+
+
+### ===================================================================
+###  SECTION 4: 프로필 (User)
+### ===================================================================
+
+### 4-1. 내 프로필 조회
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer {{token1}}
+
+### 4-2. 다른 사용자 프로필 조회
+GET {{baseUrl}}/api/users/{{userId2}}
+Authorization: Bearer {{token1}}
+
+### 4-3. 프로필 수정
+PATCH {{baseUrl}}/api/users/me
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "nickName": "강남치과원장",
+  "bio": "보철 전문 15년차 치과의사입니다.",
+  "email": "dentist01_new@example.com"
+}
+
+### 4-4. 좌표 재설정 (지오코딩 재시도)
+POST {{baseUrl}}/api/users/me/geocode
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 5: 주변 사업체 검색 (Nearby)
+### ===================================================================
+
+### 5-1. 주변 사업체 검색 (기본 반경 5km)
+GET {{baseUrl}}/api/users/nearby
+Authorization: Bearer {{token1}}
+
+### 5-2. 주변 사업체 검색 (반경 10km, limit 10)
+GET {{baseUrl}}/api/users/nearby?radiusKm=10&limit=10
+Authorization: Bearer {{token1}}
+
+### 5-3. 주변 치과만 검색
+GET {{baseUrl}}/api/users/nearby/DENTAL_CLINIC?radiusKm=10
+Authorization: Bearer {{token1}}
+
+### 5-4. 주변 기공소만 검색
+GET {{baseUrl}}/api/users/nearby/DENTAL_LAB?radiusKm=10
+Authorization: Bearer {{token1}}
+
+### 5-5. 주변 기공사 검색 (400 에러 예상 - 위치 검색 불가)
+GET {{baseUrl}}/api/users/nearby/DENTAL_TECHNICIAN?radiusKm=10
+Authorization: Bearer {{token1}}
+
+### 5-6. 반경 초과 테스트 (51km → 400 에러)
+GET {{baseUrl}}/api/users/nearby?radiusKm=51
+Authorization: Bearer {{token1}}
+
+### 5-7. 반경 미만 테스트 (0.5km → 400 에러)
+GET {{baseUrl}}/api/users/nearby?radiusKm=0.5
+Authorization: Bearer {{token1}}
+
+### 5-8. 인증 없이 주변 검색 (401 에러)
+GET {{baseUrl}}/api/users/nearby
+
+
+### ===================================================================
+###  SECTION 6: 팔로우 (Follow)
+### ===================================================================
+
+### 6-1. 사용자1 → 사용자2 팔로우
+POST {{baseUrl}}/api/users/{{userId2}}/follow
+Authorization: Bearer {{token1}}
+
+### 6-2. 사용자1 → 사용자3 팔로우
+POST {{baseUrl}}/api/users/{{userId3}}/follow
+Authorization: Bearer {{token1}}
+
+### 6-3. 사용자2 → 사용자1 맞팔로우
+POST {{baseUrl}}/api/users/{{userId1}}/follow
+Authorization: Bearer {{token2}}
+
+### 6-4. 사용자3 → 사용자1 팔로우
+POST {{baseUrl}}/api/users/{{userId1}}/follow
+Authorization: Bearer {{token3}}
+
+### 6-5. 팔로우 상태 확인
+GET {{baseUrl}}/api/users/{{userId2}}/follow/status
+Authorization: Bearer {{token1}}
+
+### 6-6. 팔로워 목록 조회 (사용자1의 팔로워)
+GET {{baseUrl}}/api/users/{{userId1}}/follow/followers?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 6-7. 팔로잉 목록 조회 (사용자1의 팔로잉)
+GET {{baseUrl}}/api/users/{{userId1}}/follow/followings?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 6-8. 언팔로우 (토글 - 다시 팔로우 취소)
+POST {{baseUrl}}/api/users/{{userId3}}/follow
+Authorization: Bearer {{token1}}
+
+### 6-9. 재팔로우 (토글 - 다시 팔로우)
+POST {{baseUrl}}/api/users/{{userId3}}/follow
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 7: 게시글 (Post)
+### ===================================================================
+
+### 7-1. 게시글 작성 - 사용자1 (작업물 공유)
+# @name createPost1
+POST {{baseUrl}}/api/posts
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "content": "오늘 작업한 지르코니아 크라운입니다. 컬러 매칭에 특히 신경 썼습니다.",
+  "category": "WORK_SHOWCASE",
+  "visibility": "PUBLIC",
+  "imageUrls": [
+    "https://example.com/images/crown1.jpg",
+    "https://example.com/images/crown2.jpg"
+  ],
+  "hashtagNames": ["지르코니아", "크라운", "보철", "컬러매칭"]
+}
+
+> {%
+  client.global.set("postId1", response.body.postId);
+%}
+
+### 7-2. 게시글 작성 - 사용자2 (기술 노하우)
+# @name createPost2
+POST {{baseUrl}}/api/posts
+Authorization: Bearer {{token2}}
+Content-Type: application/json
+
+{
+  "content": "CAD/CAM 장비 활용 팁 공유합니다. 밀링 속도 조절이 핵심입니다.",
+  "category": "TECHNIQUE",
+  "visibility": "PUBLIC",
+  "imageUrls": [
+    "https://example.com/images/cadcam1.jpg"
+  ],
+  "hashtagNames": ["CAD", "CAM", "밀링", "기공소팁"]
+}
+
+> {%
+  client.global.set("postId2", response.body.postId);
+%}
+
+### 7-3. 게시글 작성 - 사용자3 (질문)
+# @name createPost3
+POST {{baseUrl}}/api/posts
+Authorization: Bearer {{token3}}
+Content-Type: application/json
+
+{
+  "content": "임시크라운 제작 시 레진 수축률 줄이는 방법이 있을까요?",
+  "category": "QUESTION",
+  "visibility": "PUBLIC",
+  "hashtagNames": ["임시크라운", "레진", "질문"]
+}
+
+> {%
+  client.global.set("postId3", response.body.postId);
+%}
+
+### 7-4. 게시글 작성 - 비공개 (사용자1)
+# @name createPost4
+POST {{baseUrl}}/api/posts
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "content": "내부 참고용 메모: 다음 주 교정장치 의뢰 건",
+  "category": "DAILY",
+  "visibility": "PRIVATE",
+  "hashtagNames": ["메모"]
+}
+
+> {%
+  client.global.set("postId4", response.body.postId);
+%}
+
+### 7-5. 게시글 작성 - 사용자4 (학생 - 정보공유)
+# @name createPost5
+POST {{baseUrl}}/api/posts
+Authorization: Bearer {{token4}}
+Content-Type: application/json
+
+{
+  "content": "치기공과 실습 후기입니다. 왁스업 연습 많이 해야 할 것 같아요.",
+  "category": "INFO",
+  "visibility": "PUBLIC",
+  "hashtagNames": ["학생", "왁스업", "실습"]
+}
+
+> {%
+  client.global.set("postId5", response.body.postId);
+%}
+
+### 7-6. 게시글 단건 조회
+GET {{baseUrl}}/api/posts/{{postId1}}
+Authorization: Bearer {{token1}}
+
+### 7-7. 전체 공개 게시글 목록 (페이징)
+GET {{baseUrl}}/api/posts?page=0&size=10&sort=createdAt,desc
+Authorization: Bearer {{token1}}
+
+### 7-8. 특정 사용자 게시글 목록
+GET {{baseUrl}}/api/posts/users/{{userId1}}?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 7-9. 카테고리별 게시글 조회
+GET {{baseUrl}}/api/posts/category/WORK_SHOWCASE?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 7-10. 카테고리별 - TECHNIQUE
+GET {{baseUrl}}/api/posts/category/TECHNIQUE?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 7-11. 카테고리별 - QUESTION
+GET {{baseUrl}}/api/posts/category/QUESTION?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 7-12. 게시글 수정
+PUT {{baseUrl}}/api/posts/{{postId1}}
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "content": "오늘 작업한 지르코니아 크라운입니다. 컬러 매칭과 마진 핏에 특히 신경 썼습니다. (수정됨)",
+  "category": "WORK_SHOWCASE",
+  "visibility": "PUBLIC",
+  "imageUrls": [
+    "https://example.com/images/crown1.jpg",
+    "https://example.com/images/crown2.jpg",
+    "https://example.com/images/crown3_detail.jpg"
+  ],
+  "hashtagNames": ["지르코니아", "크라운", "보철", "컬러매칭", "마진핏"]
+}
+
+
+### ===================================================================
+###  SECTION 8: 댓글 (Comment)
+### ===================================================================
+
+### 8-1. 댓글 작성 - 사용자2가 게시글1에 댓글
+# @name createComment1
+POST {{baseUrl}}/api/posts/{{postId1}}/comments
+Authorization: Bearer {{token2}}
+Content-Type: application/json
+
+{
+  "content": "정말 깔끔한 작업이네요! 컬러 매칭 완벽합니다."
+}
+
+> {%
+  client.global.set("commentId1", response.body.commentId);
+%}
+
+### 8-2. 댓글 작성 - 사용자3가 게시글1에 댓글
+# @name createComment2
+POST {{baseUrl}}/api/posts/{{postId1}}/comments
+Authorization: Bearer {{token3}}
+Content-Type: application/json
+
+{
+  "content": "어떤 재료 사용하셨나요? 자연치 같습니다!"
+}
+
+> {%
+  client.global.set("commentId2", response.body.commentId);
+%}
+
+### 8-3. 댓글 작성 - 사용자1이 게시글3(질문)에 답변
+# @name createComment3
+POST {{baseUrl}}/api/posts/{{postId3}}/comments
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "content": "레진 수축률은 간접법으로 제작하면 줄일 수 있습니다. 열중합 추천드려요."
+}
+
+> {%
+  client.global.set("commentId3", response.body.commentId);
+%}
+
+### 8-4. 댓글 목록 조회 (게시글1의 댓글들)
+GET {{baseUrl}}/api/posts/{{postId1}}/comments?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 8-5. 댓글 목록 조회 (게시글3의 댓글들)
+GET {{baseUrl}}/api/posts/{{postId3}}/comments?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 8-6. 댓글 수정
+PUT {{baseUrl}}/api/comments/{{commentId1}}
+Authorization: Bearer {{token2}}
+Content-Type: application/json
+
+{
+  "content": "정말 깔끔한 작업이네요! 컬러 매칭 완벽합니다. 마진도 잘 맞는 것 같아요. (수정됨)"
+}
+
+
+### ===================================================================
+###  SECTION 9: 좋아요 (Like)
+### ===================================================================
+
+### 9-1. 좋아요 토글 - 사용자2 → 게시글1
+POST {{baseUrl}}/api/posts/{{postId1}}/likes
+Authorization: Bearer {{token2}}
+
+### 9-2. 좋아요 토글 - 사용자3 → 게시글1
+POST {{baseUrl}}/api/posts/{{postId1}}/likes
+Authorization: Bearer {{token3}}
+
+### 9-3. 좋아요 토글 - 사용자4 → 게시글1
+POST {{baseUrl}}/api/posts/{{postId1}}/likes
+Authorization: Bearer {{token4}}
+
+### 9-4. 좋아요 토글 - 사용자1 → 게시글2
+POST {{baseUrl}}/api/posts/{{postId2}}/likes
+Authorization: Bearer {{token1}}
+
+### 9-5. 좋아요 토글 - 사용자1 → 게시글3
+POST {{baseUrl}}/api/posts/{{postId3}}/likes
+Authorization: Bearer {{token1}}
+
+### 9-6. 좋아요 상태 확인
+GET {{baseUrl}}/api/posts/{{postId1}}/likes
+Authorization: Bearer {{token2}}
+
+### 9-7. 좋아요 취소 (토글 → 취소)
+POST {{baseUrl}}/api/posts/{{postId1}}/likes
+Authorization: Bearer {{token4}}
+
+### 9-8. 다시 좋아요 (토글 → 다시 좋아요)
+POST {{baseUrl}}/api/posts/{{postId1}}/likes
+Authorization: Bearer {{token4}}
+
+
+### ===================================================================
+###  SECTION 10: 북마크 (Bookmark)
+### ===================================================================
+
+### 10-1. 북마크 토글 - 사용자1 → 게시글2
+POST {{baseUrl}}/api/posts/{{postId2}}/bookmarks
+Authorization: Bearer {{token1}}
+
+### 10-2. 북마크 토글 - 사용자1 → 게시글3
+POST {{baseUrl}}/api/posts/{{postId3}}/bookmarks
+Authorization: Bearer {{token1}}
+
+### 10-3. 북마크 토글 - 사용자2 → 게시글1
+POST {{baseUrl}}/api/posts/{{postId1}}/bookmarks
+Authorization: Bearer {{token2}}
+
+### 10-4. 북마크 상태 확인
+GET {{baseUrl}}/api/posts/{{postId2}}/bookmarks
+Authorization: Bearer {{token1}}
+
+### 10-5. 내 북마크 목록 조회
+GET {{baseUrl}}/api/bookmarks/me?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 10-6. 북마크 취소 (토글)
+POST {{baseUrl}}/api/posts/{{postId3}}/bookmarks
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 11: 피드 (Feed)
+### ===================================================================
+
+### 11-1. 팔로잉 피드 - 사용자1 (사용자2,3 팔로우 중)
+GET {{baseUrl}}/api/feed?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 11-2. 팔로잉 피드 - 사용자2 (사용자1 팔로우 중)
+GET {{baseUrl}}/api/feed?page=0&size=10
+Authorization: Bearer {{token2}}
+
+### 11-3. 팔로잉 피드 - 사용자4 (아무도 팔로우 안함 → 빈 결과)
+GET {{baseUrl}}/api/feed?page=0&size=10
+Authorization: Bearer {{token4}}
+
+
+### ===================================================================
+###  SECTION 12: 해시태그 (Hashtag)
+### ===================================================================
+
+### 12-1. 트렌딩 해시태그 (Top 10)
+GET {{baseUrl}}/api/hashtags/trending?limit=10
+
+### 12-2. 트렌딩 해시태그 (Top 5)
+GET {{baseUrl}}/api/hashtags/trending?limit=5
+
+
+### ===================================================================
+###  SECTION 13: 검색 (Search)
+### ===================================================================
+
+### 13-1. 해시태그 검색 - "크라운"
+GET {{baseUrl}}/api/search/hashtags?keyword=%ED%81%AC%EB%9D%BC%EC%9A%B4&page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 13-2. 해시태그 검색 - "보철"
+GET {{baseUrl}}/api/search/hashtags?keyword=%EB%B3%B4%EC%B2%A0&page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 13-3. 해시태그로 게시글 검색 - "지르코니아"
+GET {{baseUrl}}/api/search/posts?hashtag=%EC%A7%80%EB%A5%B4%EC%BD%94%EB%8B%88%EC%95%84&page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 13-4. 해시태그로 게시글 검색 - "CAD"
+GET {{baseUrl}}/api/search/posts?hashtag=CAD&page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 13-5. 사용자 검색 - "치과"
+GET {{baseUrl}}/api/search/users?keyword=%EC%B9%98%EA%B3%BC&page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 13-6. 사용자 검색 - "기공"
+GET {{baseUrl}}/api/search/users?keyword=%EA%B8%B0%EA%B3%B5&page=0&size=10
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 14: 알림 (Notification)
+###  - 팔로우, 좋아요, 댓글 등의 액션으로 알림이 생성되었을 것
+### ===================================================================
+
+### 14-1. 내 알림 목록 조회 (사용자1)
+GET {{baseUrl}}/api/notifications?page=0&size=20
+Authorization: Bearer {{token1}}
+
+### 14-2. 읽지 않은 알림 수
+GET {{baseUrl}}/api/notifications/unread-count
+Authorization: Bearer {{token1}}
+
+### 14-3. 전체 읽음 처리
+PATCH {{baseUrl}}/api/notifications/read-all
+Authorization: Bearer {{token1}}
+
+### 14-4. 읽지 않은 알림 수 (전체 읽음 후 0이어야 함)
+GET {{baseUrl}}/api/notifications/unread-count
+Authorization: Bearer {{token1}}
+
+### 14-5. 사용자2의 알림 확인
+GET {{baseUrl}}/api/notifications?page=0&size=20
+Authorization: Bearer {{token2}}
+
+### 14-6. 사용자2 읽지 않은 알림 수
+GET {{baseUrl}}/api/notifications/unread-count
+Authorization: Bearer {{token2}}
+
+
+### ===================================================================
+###  SECTION 15: 외주 의뢰 (Case Request)
+### ===================================================================
+
+### 15-1. 의뢰 생성 - 사용자1 (치과 → 크라운 의뢰)
+# @name createCase1
+POST {{baseUrl}}/api/cases
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "title": "지르코니아 크라운 3개 제작 의뢰",
+  "description": "상악 1, 2, 3번 지르코니아 크라운 제작 부탁드립니다. A2 쉐이드 기준입니다.",
+  "category": "CROWN",
+  "preferredDeadline": "2026-03-15",
+  "budget": 150000,
+  "toothNumbers": "11,12,13"
+}
+
+> {%
+  client.global.set("caseId1", response.body.caseRequestId);
+%}
+
+### 15-2. 의뢰 생성 - 사용자1 (임플란트 의뢰)
+# @name createCase2
+POST {{baseUrl}}/api/cases
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "title": "임플란트 상부 보철 제작",
+  "description": "하악 6번 임플란트 상부 보철 티타늄 어버트먼트 + PFM 크라운",
+  "category": "IMPLANT",
+  "preferredDeadline": "2026-03-20",
+  "budget": 200000,
+  "toothNumbers": "46"
+}
+
+> {%
+  client.global.set("caseId2", response.body.caseRequestId);
+%}
+
+### 15-3. 의뢰 단건 조회
+GET {{baseUrl}}/api/cases/{{caseId1}}
+Authorization: Bearer {{token1}}
+
+### 15-4. 열린 의뢰 전체 목록
+GET {{baseUrl}}/api/cases?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 15-5. 카테고리별 의뢰 조회 (CROWN)
+GET {{baseUrl}}/api/cases/category/CROWN?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 15-6. 카테고리별 의뢰 조회 (IMPLANT)
+GET {{baseUrl}}/api/cases/category/IMPLANT?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 15-7. 내 의뢰 목록
+GET {{baseUrl}}/api/cases/me?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 15-8. 의뢰 수정
+PUT {{baseUrl}}/api/cases/{{caseId1}}
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "title": "지르코니아 크라운 3개 제작 의뢰 (급행)",
+  "description": "상악 1, 2, 3번 지르코니아 크라운 제작 부탁드립니다. A2 쉐이드, 급행 부탁드립니다.",
+  "budget": 180000
+}
+
+### 15-9. 주변 의뢰 검색
+GET {{baseUrl}}/api/cases/nearby?radiusKm=10
+Authorization: Bearer {{token2}}
+
+### 15-10. 주변 의뢰 검색 - 카테고리별 (CROWN)
+GET {{baseUrl}}/api/cases/nearby/CROWN?radiusKm=10
+Authorization: Bearer {{token2}}
+
+
+### ===================================================================
+###  SECTION 16: 견적 제안 (Case Proposal)
+### ===================================================================
+
+### 16-1. 견적 제안 - 사용자2 (기공소) → 의뢰1
+# @name createProposal1
+POST {{baseUrl}}/api/cases/{{caseId1}}/proposals
+Authorization: Bearer {{token2}}
+Content-Type: application/json
+
+{
+  "message": "안녕하세요, 10년 경력 기공소입니다. 고품질 작업 약속드립니다.",
+  "estimatedPrice": 130000,
+  "estimatedDays": 5
+}
+
+> {%
+  client.global.set("proposalId1", response.body.proposalId);
+%}
+
+### 16-2. 견적 제안 - 사용자3 (기공사) → 의뢰1
+# @name createProposal2
+POST {{baseUrl}}/api/cases/{{caseId1}}/proposals
+Authorization: Bearer {{token3}}
+Content-Type: application/json
+
+{
+  "message": "5년 경력 기공사입니다. 빠른 작업 가능합니다.",
+  "estimatedPrice": 120000,
+  "estimatedDays": 3
+}
+
+> {%
+  client.global.set("proposalId2", response.body.proposalId);
+%}
+
+### 16-3. 의뢰별 제안 목록 조회
+GET {{baseUrl}}/api/cases/{{caseId1}}/proposals?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 16-4. 내 제안 목록 (사용자2)
+GET {{baseUrl}}/api/proposals/me?page=0&size=10
+Authorization: Bearer {{token2}}
+
+### 16-5. 제안 수락 (사용자1이 제안1 수락)
+PATCH {{baseUrl}}/api/proposals/{{proposalId1}}/accept
+Authorization: Bearer {{token1}}
+
+### 16-6. 제안 거절 (사용자1이 제안2 거절)
+PATCH {{baseUrl}}/api/proposals/{{proposalId2}}/reject
+Authorization: Bearer {{token1}}
+
+### 16-7. 의뢰 완료 처리
+PATCH {{baseUrl}}/api/cases/{{caseId1}}/complete
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 17: 리뷰 (Review)
+###  - 완료된 의뢰(caseId1)에 대해 리뷰 작성
+### ===================================================================
+
+### 17-1. 리뷰 작성 - 사용자1이 의뢰1에 대해 리뷰
+# @name createReview1
+POST {{baseUrl}}/api/cases/{{caseId1}}/reviews
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "rating": 5,
+  "content": "보철물 퀄리티가 매우 좋았습니다. 납기일도 잘 지켜주셨습니다."
+}
+
+> {%
+  client.global.set("reviewId1", response.body.reviewId);
+%}
+
+### 17-2. 리뷰 단건 조회
+GET {{baseUrl}}/api/reviews/{{reviewId1}}
+Authorization: Bearer {{token1}}
+
+### 17-3. 사용자별 받은 리뷰 목록 (사용자2가 받은 리뷰)
+GET {{baseUrl}}/api/users/{{userId2}}/reviews?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 17-4. 리뷰 수정
+PATCH {{baseUrl}}/api/reviews/{{reviewId1}}
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "rating": 4,
+  "content": "보철물 퀄리티가 좋았습니다. 다만 색상이 약간 아쉬웠습니다. (수정됨)"
+}
+
+
+### ===================================================================
+###  SECTION 18: 차단 (Block)
+### ===================================================================
+
+### 18-1. 사용자1 → 사용자4 차단
+POST {{baseUrl}}/api/blocks/{{userId4}}
+Authorization: Bearer {{token1}}
+
+### 18-2. 차단 상태 확인
+GET {{baseUrl}}/api/blocks/{{userId4}}/status
+Authorization: Bearer {{token1}}
+
+### 18-3. 차단 목록 조회
+GET {{baseUrl}}/api/blocks?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 18-4. 차단된 사용자의 게시글 조회 시도 (필터링 확인)
+GET {{baseUrl}}/api/posts/users/{{userId4}}?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 18-5. 차단 해제
+DELETE {{baseUrl}}/api/blocks/{{userId4}}
+Authorization: Bearer {{token1}}
+
+### 18-6. 차단 해제 후 상태 확인
+GET {{baseUrl}}/api/blocks/{{userId4}}/status
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 19: 신고 (Report)
+### ===================================================================
+
+### 19-1. 게시글 신고 - 사용자2가 게시글5 신고
+# @name createReport1
+POST {{baseUrl}}/api/reports
+Authorization: Bearer {{token2}}
+Content-Type: application/json
+
+{
+  "targetType": "POST",
+  "targetId": {{postId5}},
+  "reason": "SPAM",
+  "description": "홍보성 게시글로 의심됩니다."
+}
+
+> {%
+  client.global.set("reportId1", response.body.reportId);
+%}
+
+### 19-2. 사용자 신고 - 사용자3가 사용자4 신고
+# @name createReport2
+POST {{baseUrl}}/api/reports
+Authorization: Bearer {{token3}}
+Content-Type: application/json
+
+{
+  "targetType": "USER",
+  "targetId": {{userId4}},
+  "reason": "INAPPROPRIATE",
+  "description": "부적절한 프로필 내용"
+}
+
+> {%
+  client.global.set("reportId2", response.body.reportId);
+%}
+
+### 19-3. 내 신고 목록 조회 (사용자2)
+GET {{baseUrl}}/api/reports/my?page=0&size=10
+Authorization: Bearer {{token2}}
+
+
+### ===================================================================
+###  SECTION 20: 관리자 (Admin)
+###  ⚠️ 먼저 DB에서 사용자1의 role을 ADMIN으로 변경하세요:
+###  UPDATE users SET role = 'ADMIN' WHERE user_name = 'dentist01';
+### ===================================================================
+
+### 20-1. 관리자 대시보드 통계
+GET {{baseUrl}}/api/admin/dashboard/stats
+Authorization: Bearer {{token1}}
+
+### 20-2. 전체 사용자 목록
+GET {{baseUrl}}/api/admin/users?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 20-3. 신고 목록 조회 (전체)
+GET {{baseUrl}}/api/admin/reports?page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 20-4. 신고 목록 조회 (PENDING만)
+GET {{baseUrl}}/api/admin/reports?status=PENDING&page=0&size=10
+Authorization: Bearer {{token1}}
+
+### 20-5. 신고 상세 조회
+GET {{baseUrl}}/api/admin/reports/{{reportId1}}
+Authorization: Bearer {{token1}}
+
+### 20-6. 신고 처리 (수락)
+PATCH {{baseUrl}}/api/admin/reports/{{reportId1}}
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "status": "ACCEPTED"
+}
+
+### 20-7. 신고 처리 (거절)
+PATCH {{baseUrl}}/api/admin/reports/{{reportId2}}
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "status": "REJECTED"
+}
+
+### 20-8. 사용자 정지
+PATCH {{baseUrl}}/api/admin/users/{{userId4}}/suspend
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "reason": "커뮤니티 가이드라인 위반",
+  "suspendUntil": "2026-04-01T00:00:00"
+}
+
+### 20-9. 사용자 정지 해제
+PATCH {{baseUrl}}/api/admin/users/{{userId4}}/unsuspend
+Authorization: Bearer {{token1}}
+
+### 20-10. 사용자 역할 변경 (USER → ADMIN)
+PATCH {{baseUrl}}/api/admin/users/{{userId2}}/role
+Authorization: Bearer {{token1}}
+Content-Type: application/json
+
+{
+  "role": "ADMIN"
+}
+
+### 20-11. 게시글 관리자 삭제
+DELETE {{baseUrl}}/api/admin/posts/{{postId5}}
+Authorization: Bearer {{token1}}
+
+### 20-12. 댓글 관리자 삭제
+DELETE {{baseUrl}}/api/admin/comments/{{commentId3}}
+Authorization: Bearer {{token1}}
+
+### 20-13. 의뢰 관리자 삭제
+DELETE {{baseUrl}}/api/admin/cases/{{caseId2}}
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 21: 정리 & 삭제 테스트
+### ===================================================================
+
+### 21-1. 댓글 삭제 (사용자3이 본인 댓글 삭제)
+DELETE {{baseUrl}}/api/comments/{{commentId2}}
+Authorization: Bearer {{token3}}
+
+### 21-2. 게시글 삭제 (사용자1이 비공개 게시글 삭제)
+DELETE {{baseUrl}}/api/posts/{{postId4}}
+Authorization: Bearer {{token1}}
+
+### 21-3. 리뷰 삭제
+DELETE {{baseUrl}}/api/reviews/{{reviewId1}}
+Authorization: Bearer {{token1}}
+
+### 21-4. 제안 삭제 (거절된 제안 삭제)
+DELETE {{baseUrl}}/api/proposals/{{proposalId2}}
+Authorization: Bearer {{token3}}
+
+
+### ===================================================================
+###  SECTION 22: 로그아웃
+### ===================================================================
+
+### 22-1. 로그아웃 - 사용자1
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token1}}
+
+### 22-2. 로그아웃 후 토큰 사용 시도 (401 에러 예상)
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer {{token1}}
+
+
+### ===================================================================
+###  SECTION 23: 에러 케이스 모음
+### ===================================================================
+
+### 23-1. 잘못된 토큰
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer invalid_token_here
+
+### 23-2. 존재하지 않는 게시글 조회
+GET {{baseUrl}}/api/posts/99999
+Authorization: Bearer {{token2}}
+
+### 23-3. 존재하지 않는 사용자 프로필 조회
+GET {{baseUrl}}/api/users/99999
+Authorization: Bearer {{token2}}
+
+### 23-4. 중복 회원가입
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "dentist01",
+  "password": "Password123!",
+  "nickName": "중복테스트",
+  "birthday": "1985-03-15",
+  "address": "서울특별시 강남구 테헤란로 123",
+  "email": "duplicate@example.com",
+  "userType": "DENTAL_CLINIC"
+}
+
+### 23-5. 유효성 검증 실패 - 비밀번호 누락
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "userName": "testuser",
+  "nickName": "테스트",
+  "birthday": "1990-01-01",
+  "address": "서울시",
+  "email": "test@test.com",
+  "userType": "STUDENT"
+}
+
+### 23-6. 잘못된 카테고리
+GET {{baseUrl}}/api/posts/category/INVALID_CATEGORY?page=0&size=10
+Authorization: Bearer {{token2}}
+
+### 23-7. 다른 사람 게시글 수정 시도 (403 예상)
+PUT {{baseUrl}}/api/posts/{{postId2}}
+Authorization: Bearer {{token3}}
+Content-Type: application/json
+
+{
+  "content": "남의 게시글 수정 시도"
+}
+
+### 23-8. 다른 사람 댓글 삭제 시도 (403 예상)
+DELETE {{baseUrl}}/api/comments/{{commentId1}}
+Authorization: Bearer {{token3}}

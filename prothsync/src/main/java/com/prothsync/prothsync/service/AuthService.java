@@ -63,7 +63,15 @@ public class AuthService {
             throw new BusinessException(AuthErrorCode.INVALID_CREDENTIALS);
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserName(),user.getUserType());
+        if (user.isSuspended()) {
+            throw new BusinessException(AuthErrorCode.USER_SUSPENDED);
+        }
+        if (user.hasExpiredSuspension()) {
+            user.unsuspend();
+            userRepository.save(user);
+        }
+
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserName(), user.getUserType());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUserId());
 
         saveOrUpdateRefreshToken(user.getUserId(), refreshToken);
@@ -98,6 +106,14 @@ public class AuthService {
         Long userId = storedToken.getUserId();
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
+        if (user.isSuspended()) {
+            throw new BusinessException(AuthErrorCode.USER_SUSPENDED);
+        }
+        if (user.hasExpiredSuspension()) {
+            user.unsuspend();
+            userRepository.save(user);
+        }
 
         String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getUserName(), user.getUserType());
         String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getUserId());

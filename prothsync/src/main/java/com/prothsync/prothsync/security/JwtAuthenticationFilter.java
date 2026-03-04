@@ -1,6 +1,7 @@
 package com.prothsync.prothsync.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prothsync.prothsync.exception.AuthErrorCode;
 import com.prothsync.prothsync.exception.ErrorCode;
 import com.prothsync.prothsync.exception.ErrorResponse;
 import com.prothsync.prothsync.exception.JwtErrorCode;
@@ -52,6 +53,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtTokenProvider.isAccessToken(token)) {
                     Long userId = jwtTokenProvider.getUserId(token);
                     UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+
+                    if (!userDetails.isAccountNonLocked()) {
+                        log.warn("정지된 사용자의 요청입니다. userId: {}", userId);
+                        sendErrorResponse(response, AuthErrorCode.USER_SUSPENDED);
+                        return;
+                    }
 
                     UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
