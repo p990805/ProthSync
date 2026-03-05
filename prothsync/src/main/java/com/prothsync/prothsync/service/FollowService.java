@@ -12,7 +12,10 @@ import com.prothsync.prothsync.global.PageResponse;
 import com.prothsync.prothsync.repository.repository.FollowRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,9 +74,21 @@ public class FollowService {
 
         Page<Follow> followPage = followRepository.findAllByFollowingId(userId, pageable);
 
-        List<FollowUserResponseDTO> followers = followPage.getContent().stream()
-            .map(follow -> findUserOrThrow(follow.getFollowerId()))
-            .map(FollowUserResponseDTO::from)
+        List<Long> followerIds = followPage.getContent().stream()
+            .map(Follow::getFollowerId)
+            .toList();
+
+        Map<Long, User> userMap = userRepository.findAllByIds(followerIds).stream()
+            .collect(Collectors.toMap(User::getUserId, Function.identity()));
+
+        List<FollowUserResponseDTO> followers = followerIds.stream()
+            .map(id -> {
+                User user = userMap.get(id);
+                if (user == null) {
+                    throw new BusinessException(UserErrorCode.USER_NOT_FOUND);
+                }
+                return FollowUserResponseDTO.from(user);
+            })
             .toList();
 
         return PageResponse.of(followers, followPage);
@@ -85,9 +100,21 @@ public class FollowService {
 
         Page<Follow> followPage = followRepository.findAllByFollowerId(userId, pageable);
 
-        List<FollowUserResponseDTO> followings = followPage.getContent().stream()
-            .map(follow -> findUserOrThrow(follow.getFollowingId()))
-            .map(FollowUserResponseDTO::from)
+        List<Long> followingIds = followPage.getContent().stream()
+            .map(Follow::getFollowingId)
+            .toList();
+
+        Map<Long, User> userMap = userRepository.findAllByIds(followingIds).stream()
+            .collect(Collectors.toMap(User::getUserId, Function.identity()));
+
+        List<FollowUserResponseDTO> followings = followingIds.stream()
+            .map(id -> {
+                User user = userMap.get(id);
+                if (user == null) {
+                    throw new BusinessException(UserErrorCode.USER_NOT_FOUND);
+                }
+                return FollowUserResponseDTO.from(user);
+            })
             .toList();
 
         return PageResponse.of(followings, followPage);

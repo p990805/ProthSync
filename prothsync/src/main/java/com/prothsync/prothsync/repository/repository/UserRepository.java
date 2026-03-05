@@ -22,6 +22,8 @@ public interface UserRepository {
     List<User> findNearbyUsersByType(double lat, double lng, double radiusKm,
         Long excludeUserId, String userType, int limit);
 
+    List<User> findAllByIds(List<Long> userIds);
+
     Page<User> searchByNickName(String keyword, Pageable pageable);
 
     Page<User> findAll(Pageable pageable);
