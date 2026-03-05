@@ -19,6 +19,7 @@ import com.prothsync.prothsync.repository.repository.PostLikeRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -180,9 +181,14 @@ public class PostService {
     }
 
     private PageResponse<PostSummaryResponseDTO> toSummaryPageResponse(Page<Post> postPage) {
+        List<Long> postIds = postPage.getContent().stream()
+            .map(Post::getPostId)
+            .toList();
+
+        Map<Long, String> thumbnailMap = postImageService.getThumbnailUrls(postIds);
+
         List<PostSummaryResponseDTO> summaries = postPage.getContent().stream()
-            .map(post -> PostSummaryResponseDTO.of(
-                post, postImageService.getThumbnailUrl(post.getPostId())))
+            .map(post -> PostSummaryResponseDTO.of(post, thumbnailMap.get(post.getPostId())))
             .toList();
 
         return PageResponse.of(summaries, postPage);
