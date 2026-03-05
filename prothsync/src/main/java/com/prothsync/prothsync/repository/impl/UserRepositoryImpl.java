@@ -71,6 +71,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public List<User> findAllByIds(List<Long> userIds) {
+        return userJpaRepository.findAllByUserIdIn(userIds);
+    }
+
+    @Override
     public Page<User> searchByNickName(String keyword, Pageable pageable) {
         return userJpaRepository.findByNickNameContainingIgnoreCase(keyword, pageable);
     }

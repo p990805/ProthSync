@@ -103,6 +103,8 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
         @Param("limit") int limit
     );
 
+    List<User> findAllByUserIdIn(List<Long> userIds);
+
     Page<User> findByNickNameContainingIgnoreCase(String keyword, Pageable pageable);
 
     Page<User> findAll(Pageable pageable);
