@@ -21,4 +21,6 @@ public interface PostImageRepository {
     void softDeleteAllByPostId(Long postId, Long userId);
 
     int countByPostId(Long postId);
+
+    List<PostImage> findFirstImagesByPostIds(List<Long> postIds);
 }

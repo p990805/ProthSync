@@ -18,4 +18,8 @@ public interface PostImageJpaRepository extends JpaRepository<PostImage, Long> {
     @Modifying
     @Query("UPDATE PostImage pi SET pi.deletedAt = CURRENT_TIMESTAMP, pi.deletedBy = :userId WHERE pi.postId = :postId AND pi.deletedAt IS NULL")
     int softDeleteAllByPostId(@Param("postId") Long postId, @Param("userId") Long userId);
+
+    @Query("SELECT pi FROM PostImage pi WHERE pi.postId IN :postIds " +
+        "AND pi.displayOrder = (SELECT MIN(pi2.displayOrder) FROM PostImage pi2 WHERE pi2.postId = pi.postId)")
+    List<PostImage> findFirstImagesByPostIds(@Param("postIds") List<Long> postIds);
 }

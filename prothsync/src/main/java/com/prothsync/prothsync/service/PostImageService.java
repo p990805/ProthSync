@@ -7,6 +7,8 @@ import com.prothsync.prothsync.exception.PostErrorCode;
 import com.prothsync.prothsync.repository.repository.PostImageRepository;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +64,15 @@ public class PostImageService {
     public void softDeleteAllByPostId(Long postId, Long userId) {
         // TODO: S3 도입 시 실제 파일 삭제 처리 추가
         postImageRepository.softDeleteAllByPostId(postId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, String> getThumbnailUrls(List<Long> postIds) {
+        if (postIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return postImageRepository.findFirstImagesByPostIds(postIds).stream()
+            .collect(Collectors.toMap(PostImage::getPostId, PostImage::getImagePath));
     }
 
     private void validateImageCount(List<String> imageUrls) {

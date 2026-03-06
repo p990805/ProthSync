@@ -53,4 +53,9 @@ public class PostImageRepositoryImpl implements PostImageRepository {
     public int countByPostId(Long postId) {
         return postImageJpaRepository.countByPostId(postId);
     }
+
+    @Override
+    public List<PostImage> findFirstImagesByPostIds(List<Long> postIds) {
+        return postImageJpaRepository.findFirstImagesByPostIds(postIds);
+    }
 }
