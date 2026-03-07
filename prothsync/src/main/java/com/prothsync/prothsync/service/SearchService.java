@@ -15,6 +15,7 @@ import com.prothsync.prothsync.repository.repository.HashtagRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,10 +63,19 @@ public class SearchService {
 
         List<Long> blockedIds = getBlockedIds(currentUserId);
 
-        List<PostSummaryResponseDTO> summaries = postPage.getContent().stream()
+        List<Post> filteredPosts = postPage.getContent().stream()
             .filter(post -> !blockedIds.contains(post.getUserId()))
+            .toList();
+
+        List<Long> postIds = filteredPosts.stream()
+            .map(Post::getPostId)
+            .toList();
+
+        Map<Long, String> thumbnailMap = postImageService.getThumbnailUrls(postIds);
+
+        List<PostSummaryResponseDTO> summaries = filteredPosts.stream()
             .map(post -> PostSummaryResponseDTO.of(
-                post, postImageService.getThumbnailUrl(post.getPostId())))
+                post, thumbnailMap.get(post.getPostId())))
             .toList();
 
         return PageResponse.of(summaries, postPage);
