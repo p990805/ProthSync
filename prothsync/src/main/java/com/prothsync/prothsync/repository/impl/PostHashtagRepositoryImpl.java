@@ -47,4 +47,9 @@ public class PostHashtagRepositoryImpl implements PostHashtagRepository {
     public boolean existsByPostIdAndHashtagId(Long postId, Long hashtagId) {
         return postHashtagJpaRepository.existsByPostIdAndHashtagId(postId, hashtagId);
     }
+
+    @Override
+    public List<PostHashtag> findAllByPostIdIn(List<Long> postIds) {
+        return postHashtagJpaRepository.findAllByPostIdIn(postIds);
+    }
 }

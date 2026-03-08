@@ -78,12 +78,53 @@ public class HashtagService {
     public List<HashtagResponseDTO> getHashtagsByPostId(Long postId) {
         List<PostHashtag> postHashtags = postHashtagRepository.findAllByPostId(postId);
 
+        if (postHashtags.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> hashtagIds = postHashtags.stream()
+            .map(PostHashtag::getHashtagId)
+            .toList();
+
+        Map<Long, Hashtag> hashtagMap = hashtagRepository.findAllByIds(hashtagIds).stream()
+            .collect(Collectors.toMap(Hashtag::getHashtagId, Function.identity()));
+
         return postHashtags.stream()
-            .map(ph -> hashtagRepository.findById(ph.getHashtagId()))
-            .filter(java.util.Optional::isPresent)
-            .map(java.util.Optional::get)
+            .map(ph -> hashtagMap.get(ph.getHashtagId()))
+            .filter(hashtag -> hashtag != null)
             .map(HashtagResponseDTO::from)
             .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, List<HashtagResponseDTO>> getHashtagsByPostIds(List<Long> postIds) {
+        if (postIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<PostHashtag> allPostHashtags = postHashtagRepository.findAllByPostIdIn(postIds);
+
+        if (allPostHashtags.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Long> hashtagIds = allPostHashtags.stream()
+            .map(PostHashtag::getHashtagId)
+            .distinct()
+            .toList();
+
+        Map<Long, Hashtag> hashtagMap = hashtagRepository.findAllByIds(hashtagIds).stream()
+            .collect(Collectors.toMap(Hashtag::getHashtagId, Function.identity()));
+
+        return allPostHashtags.stream()
+            .filter(ph -> hashtagMap.containsKey(ph.getHashtagId()))
+            .collect(Collectors.groupingBy(
+                PostHashtag::getPostId,
+                Collectors.mapping(
+                    ph -> HashtagResponseDTO.from(hashtagMap.get(ph.getHashtagId())),
+                    Collectors.toList()
+                )
+            ));
     }
 
     @Transactional(readOnly = true)

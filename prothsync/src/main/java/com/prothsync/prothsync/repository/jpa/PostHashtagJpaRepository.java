@@ -13,4 +13,6 @@ public interface PostHashtagJpaRepository extends JpaRepository<PostHashtag, Lon
     void deleteAllByPostId(Long postId);
 
     boolean existsByPostIdAndHashtagId(Long postId, Long hashtagId);
+
+    List<PostHashtag> findAllByPostIdIn(List<Long> postIds);
 }

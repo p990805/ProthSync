@@ -37,6 +37,11 @@ public class HashtagRepositoryImpl implements HashtagRepository {
     }
 
     @Override
+    public List<Hashtag> findAllByIds(List<Long> hashtagIds) {
+        return hashtagJpaRepository.findAllById(hashtagIds);
+    }
+
+    @Override
     public List<Hashtag> findTopByUsageCount(int limit) {
         return hashtagJpaRepository.findTopByUsageCount(limit);
     }
