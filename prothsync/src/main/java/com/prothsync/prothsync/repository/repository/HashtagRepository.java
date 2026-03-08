@@ -16,9 +16,12 @@ public interface HashtagRepository {
 
     List<Hashtag> findAllByTagNameIn(List<String> tagNames);
 
+    List<Hashtag> findAllByIds(List<Long> hashtagIds);
+
     List<Hashtag> findTopByUsageCount(int limit);
 
     boolean existsByTagName(String tagName);
 
     Page<Hashtag> searchByTagNamePrefix(String keyword, Pageable pageable);
+
 }
