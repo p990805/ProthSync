@@ -68,4 +68,9 @@ public class PostRepositoryImpl implements PostRepository {
     public long count() {
         return postJpaRepository.count();
     }
+
+    @Override
+    public List<Post> findAllByIds(List<Long> postIds) {
+        return postJpaRepository.findAllByPostIdIn(postIds);
+    }
 }

@@ -1,6 +1,7 @@
 package com.prothsync.prothsync.repository.repository;
 
 import com.prothsync.prothsync.entity.post.PostLike;
+import java.util.List;
 import java.util.Optional;
 
 public interface PostLikeRepository {
@@ -16,4 +17,6 @@ public interface PostLikeRepository {
     boolean existsByUserIdAndPostId(Long userId, Long postId);
 
     int countByPostId(Long postId);
+
+    List<Long> findLikedPostIds(Long userId, List<Long> postIds);
 }

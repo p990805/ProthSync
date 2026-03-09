@@ -23,4 +23,6 @@ public interface PostImageRepository {
     int countByPostId(Long postId);
 
     List<PostImage> findFirstImagesByPostIds(List<Long> postIds);
+
+    List<PostImage> findAllByPostIdsOrderByDisplayOrder(List<Long> postIds);
 }

@@ -25,4 +25,6 @@ public interface PostRepository {
     Page<Post> findAllByHashtagIdAndVisibilityPublic(Long hashtagId, Pageable pageable);
 
     long count();
+
+    List<Post> findAllByIds(List<Long> postIds);
 }

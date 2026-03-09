@@ -12,8 +12,13 @@ import com.prothsync.prothsync.global.PageResponse;
 import com.prothsync.prothsync.repository.repository.BookmarkRepository;
 import com.prothsync.prothsync.repository.repository.PostLikeRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +39,7 @@ public class BookmarkService {
     public BookmarkResponseDTO toggleBookmark(Long postId, Long userId) {
         findPostOrThrow(postId);
 
-        Optional<Bookmark> existing = bookmarkRepository.findByUserIdAndPostId(userId, postId);
+        java.util.Optional<Bookmark> existing = bookmarkRepository.findByUserIdAndPostId(userId, postId);
 
         if (existing.isPresent()) {
             bookmarkRepository.delete(existing.get());
@@ -50,16 +55,38 @@ public class BookmarkService {
     public PageResponse<PostResponseDTO> getMyBookmarks(Long userId, Pageable pageable) {
         Page<Bookmark> bookmarkPage = bookmarkRepository.findAllByUserId(userId, pageable);
 
-        List<PostResponseDTO> posts = bookmarkPage.getContent().stream()
-            .map(bookmark -> {
-                Post post = postRepository.findById(bookmark.getPostId())
-                    .orElse(null);
-                if (post == null) {
-                    return null;
-                }
-                return buildPostResponseDTO(post, userId);
-            })
-            .filter(dto -> dto != null)
+        List<Long> postIds = bookmarkPage.getContent().stream()
+            .map(Bookmark::getPostId)
+            .toList();
+
+        if (postIds.isEmpty()) {
+            return PageResponse.of(List.of(), bookmarkPage);
+        }
+
+        // ★ 배치 조회 (총 5 쿼리)
+        Map<Long, Post> postMap = postRepository.findAllByIds(postIds).stream()
+            .collect(Collectors.toMap(Post::getPostId, Function.identity()));
+
+        Map<Long, List<PostImageResponseDTO>> imageMap =
+            postImageService.getImagesByPostIds(postIds);
+
+        Map<Long, List<HashtagResponseDTO>> hashtagMap =
+            hashtagService.getHashtagsByPostIds(postIds);
+
+        Set<Long> likedPostIds = new HashSet<>(
+            postLikeRepository.findLikedPostIds(userId, postIds));
+
+        // ★ DTO 조립 (isBookmarked = 항상 true)
+        List<PostResponseDTO> posts = postIds.stream()
+            .map(postMap::get)
+            .filter(Objects::nonNull)
+            .map(post -> PostResponseDTO.of(
+                post,
+                imageMap.getOrDefault(post.getPostId(), List.of()),
+                hashtagMap.getOrDefault(post.getPostId(), List.of()),
+                likedPostIds.contains(post.getPostId()),
+                true
+            ))
             .toList();
 
         return PageResponse.of(posts, bookmarkPage);
@@ -73,14 +100,5 @@ public class BookmarkService {
     private Post findPostOrThrow(Long postId) {
         return postRepository.findById(postId)
             .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
-    }
-
-    private PostResponseDTO buildPostResponseDTO(Post post, Long currentUserId) {
-        List<PostImageResponseDTO> imageDtos = postImageService.getImagesByPostId(post.getPostId());
-        List<HashtagResponseDTO> hashtagDtos = hashtagService.getHashtagsByPostId(post.getPostId());
-        boolean isLiked = postLikeRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
-        boolean isBookmarked = bookmarkRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
-
-        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked, isBookmarked);
     }
 }

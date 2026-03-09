@@ -22,4 +22,6 @@ public interface PostImageJpaRepository extends JpaRepository<PostImage, Long> {
     @Query("SELECT pi FROM PostImage pi WHERE pi.postId IN :postIds " +
         "AND pi.displayOrder = (SELECT MIN(pi2.displayOrder) FROM PostImage pi2 WHERE pi2.postId = pi.postId)")
     List<PostImage> findFirstImagesByPostIds(@Param("postIds") List<Long> postIds);
+
+    List<PostImage> findAllByPostIdInOrderByDisplayOrderAsc(List<Long> postIds);
 }
