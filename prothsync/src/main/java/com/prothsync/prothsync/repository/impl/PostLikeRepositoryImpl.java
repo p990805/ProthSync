@@ -3,6 +3,7 @@ package com.prothsync.prothsync.repository.impl;
 import com.prothsync.prothsync.entity.post.PostLike;
 import com.prothsync.prothsync.repository.jpa.PostLikeJpaRepository;
 import com.prothsync.prothsync.repository.repository.PostLikeRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -41,5 +42,10 @@ public class PostLikeRepositoryImpl implements PostLikeRepository {
     @Override
     public int countByPostId(Long postId) {
         return postLikeJpaRepository.countByPostId(postId);
+    }
+
+    @Override
+    public List<Long> findLikedPostIds(Long userId, List<Long> postIds) {
+        return postLikeJpaRepository.findPostIdsByUserIdAndPostIdIn(userId, postIds);
     }
 }

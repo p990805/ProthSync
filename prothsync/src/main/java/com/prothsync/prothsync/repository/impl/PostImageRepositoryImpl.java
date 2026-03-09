@@ -58,4 +58,9 @@ public class PostImageRepositoryImpl implements PostImageRepository {
     public List<PostImage> findFirstImagesByPostIds(List<Long> postIds) {
         return postImageJpaRepository.findFirstImagesByPostIds(postIds);
     }
+
+    @Override
+    public List<PostImage> findAllByPostIdsOrderByDisplayOrder(List<Long> postIds) {
+        return postImageJpaRepository.findAllByPostIdInOrderByDisplayOrderAsc(postIds);
+    }
 }

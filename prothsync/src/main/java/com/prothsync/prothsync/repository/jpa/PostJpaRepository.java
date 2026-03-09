@@ -35,4 +35,6 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
         """)
     Page<Post> findAllByHashtagIdAndVisibilityPublic(
         @Param("hashtagId") Long hashtagId, Pageable pageable);
+
+    List<Post> findAllByPostIdIn(List<Long> postIds);
 }

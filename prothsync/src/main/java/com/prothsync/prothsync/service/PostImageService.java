@@ -75,6 +75,21 @@ public class PostImageService {
             .collect(Collectors.toMap(PostImage::getPostId, PostImage::getImagePath));
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, List<PostImageResponseDTO>> getImagesByPostIds(List<Long> postIds) {
+        if (postIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<PostImage> allImages = postImageRepository.findAllByPostIdsOrderByDisplayOrder(postIds);
+
+        return allImages.stream()
+            .collect(Collectors.groupingBy(
+                PostImage::getPostId,
+                Collectors.mapping(PostImageResponseDTO::from, Collectors.toList())
+            ));
+    }
+
     private void validateImageCount(List<String> imageUrls) {
         if (imageUrls.size() > MAX_IMAGES_PER_POST) {
             throw new BusinessException(PostErrorCode.IMAGE_LIMIT_EXCEEDED);
