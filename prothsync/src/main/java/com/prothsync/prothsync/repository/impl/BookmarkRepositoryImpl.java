@@ -3,6 +3,7 @@ package com.prothsync.prothsync.repository.impl;
 import com.prothsync.prothsync.entity.post.Bookmark;
 import com.prothsync.prothsync.repository.jpa.BookmarkJpaRepository;
 import com.prothsync.prothsync.repository.repository.BookmarkRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,5 +44,10 @@ public class BookmarkRepositoryImpl implements BookmarkRepository {
     @Override
     public Page<Bookmark> findAllByUserId(Long userId, Pageable pageable) {
         return bookmarkJpaRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
+    }
+
+    @Override
+    public List<Long> findBookmarkedPostIds(Long userId, List<Long> postIds) {
+        return bookmarkJpaRepository.findPostIdsByUserIdAndPostIdIn(userId, postIds);
     }
 }

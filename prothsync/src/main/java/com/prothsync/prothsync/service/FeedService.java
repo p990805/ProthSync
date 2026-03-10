@@ -12,6 +12,7 @@ import com.prothsync.prothsync.repository.repository.PostLikeRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -50,21 +51,37 @@ public class FeedService {
 
         Page<Post> postPage = postRepository.findFeedPostsByUserIds(filteredFollowingIds, pageable);
 
-        List<PostResponseDTO> feedPosts = postPage.getContent().stream()
-            .map(post -> buildPostResponseDTO(post, userId))
+        List<Post> posts = postPage.getContent();
+        if (posts.isEmpty()) {
+            return PageResponse.of(List.of(), postPage);
+        }
+
+        List<Long> postIds = posts.stream()
+            .map(Post::getPostId)
+            .toList();
+
+        Map<Long, List<PostImageResponseDTO>> imageMap =
+            postImageService.getImagesByPostIds(postIds);
+
+        Map<Long, List<HashtagResponseDTO>> hashtagMap =
+            hashtagService.getHashtagsByPostIds(postIds);
+
+        Set<Long> likedPostIds = new HashSet<>(
+            postLikeRepository.findLikedPostIds(userId, postIds));
+
+        Set<Long> bookmarkedPostIds = new HashSet<>(
+            bookmarkRepository.findBookmarkedPostIds(userId, postIds));
+
+        List<PostResponseDTO> feedPosts = posts.stream()
+            .map(post -> PostResponseDTO.of(
+                post,
+                imageMap.getOrDefault(post.getPostId(), List.of()),
+                hashtagMap.getOrDefault(post.getPostId(), List.of()),
+                likedPostIds.contains(post.getPostId()),
+                bookmarkedPostIds.contains(post.getPostId())
+            ))
             .toList();
 
         return PageResponse.of(feedPosts, postPage);
-    }
-
-    private PostResponseDTO buildPostResponseDTO(Post post, Long currentUserId) {
-        List<PostImageResponseDTO> imageDtos = postImageService.getImagesByPostId(post.getPostId());
-        List<HashtagResponseDTO> hashtagDtos = hashtagService.getHashtagsByPostId(post.getPostId());
-        boolean isLiked = currentUserId != null
-            && postLikeRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
-        boolean isBookmarked = currentUserId != null                                    // ★ 추가
-            && bookmarkRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
-
-        return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked, isBookmarked); // ★ 파라미터 추가
     }
 }
