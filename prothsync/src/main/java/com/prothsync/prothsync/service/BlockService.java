@@ -13,7 +13,10 @@ import com.prothsync.prothsync.repository.repository.BlockRepository;
 import com.prothsync.prothsync.repository.repository.FollowRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,16 +66,29 @@ public class BlockService {
 
         Page<Block> blockPage = blockRepository.findAllByBlockerId(blockerId, pageable);
 
+        List<Long> blockedIds = blockPage.getContent().stream()
+            .map(Block::getBlockedId)
+            .toList();
+
+        if (blockedIds.isEmpty()) {
+            return PageResponse.of(List.of(), blockPage);
+        }
+
+        Map<Long, User> userMap = userRepository.findAllByIds(blockedIds).stream()
+            .collect(Collectors.toMap(User::getUserId, Function.identity()));
+
         List<BlockedUserResponseDTO> blockedUsers = blockPage.getContent().stream()
             .map(block -> {
-                User blockedUser = findUserOrThrow(block.getBlockedId());
+                User blockedUser = userMap.get(block.getBlockedId());
+                if (blockedUser == null) {
+                    throw new BusinessException(UserErrorCode.USER_NOT_FOUND);
+                }
                 return BlockedUserResponseDTO.of(blockedUser, block.getCreatedAt());
             })
             .toList();
 
         return PageResponse.of(blockedUsers, blockPage);
     }
-
     @Transactional(readOnly = true)
     public boolean isBlocked(Long blockerId, Long blockedId) {
         return blockRepository.existsByBlockerIdAndBlockedId(blockerId, blockedId);
