@@ -37,6 +37,7 @@ public class PostService {
     private final PostImageService postImageService;
     private final CommentService commentService;
     private final BookmarkRepository bookmarkRepository;
+    private final PostViewCountService postViewCountService;
 
     @Transactional
     public PostResponseDTO createPost(Long userId, PostCreateRequestDTO request) {
@@ -53,15 +54,14 @@ public class PostService {
         return toPostResponseDTO(savedPost, savedImages, hashtags, false);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public PostResponseDTO getPost(Long postId, Long currentUserId) {
         Post post = findPostOrThrow(postId);
         validatePostAccess(post, currentUserId);
 
-        post.incrementViewCount();
-        postRepository.save(post);
+        postViewCountService.increaseViewCount(postId);
 
-        return buildPostResponseDTO(post, currentUserId);
+        return buildPostResponseDTOWithViewCount(post, currentUserId);
     }
 
     @Transactional(readOnly = true)
@@ -165,6 +165,21 @@ public class PostService {
             && bookmarkRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
 
         return PostResponseDTO.of(post, imageDtos, hashtagDtos, isLiked, isBookmarked);
+    }
+
+    private PostResponseDTO buildPostResponseDTOWithViewCount(Post post, Long currentUserId) {
+        List<PostImageResponseDTO> imageDtos = postImageService.getImagesByPostId(post.getPostId());
+        List<HashtagResponseDTO> hashtagDtos = hashtagService.getHashtagsByPostId(post.getPostId());
+        boolean isLiked = currentUserId != null
+            && postLikeRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
+        boolean isBookmarked = currentUserId != null
+            && bookmarkRepository.existsByUserIdAndPostId(currentUserId, post.getPostId());
+
+        int redisDelta = postViewCountService.getViewCountDelta(post.getPostId());
+        int realTimeViewCount = post.getViewCount() + redisDelta;
+
+        return PostResponseDTO.ofWithViewCount(
+            post, imageDtos, hashtagDtos, isLiked, isBookmarked, realTimeViewCount);
     }
 
     private PostResponseDTO toPostResponseDTO(

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -37,4 +38,8 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
         @Param("hashtagId") Long hashtagId, Pageable pageable);
 
     List<Post> findAllByPostIdIn(List<Long> postIds);
+
+    @Modifying
+    @Query("UPDATE Post p SET p.viewCount = p.viewCount + :delta WHERE p.postId = :postId")
+    void incrementViewCount(@Param("postId") Long postId, @Param("delta") int delta);
 }

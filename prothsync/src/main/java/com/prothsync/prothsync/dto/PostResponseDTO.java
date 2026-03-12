@@ -47,4 +47,30 @@ public record PostResponseDTO(
             post.getUpdatedAt()
         );
     }
+
+    public static PostResponseDTO ofWithViewCount(
+        Post post,
+        List<PostImageResponseDTO> images,
+        List<HashtagResponseDTO> hashtags,
+        boolean isLiked,
+        boolean isBookmarked,
+        int viewCount
+    ) {
+        return new PostResponseDTO(
+            post.getPostId(),
+            post.getUserId(),
+            post.getContent(),
+            post.getCategory(),
+            post.getVisibility(),
+            images,
+            hashtags,
+            post.getLikeCount(),
+            post.getCommentCount(),
+            viewCount,
+            isLiked,
+            isBookmarked,
+            post.getCreatedAt(),
+            post.getUpdatedAt()
+        );
+    }
 }
