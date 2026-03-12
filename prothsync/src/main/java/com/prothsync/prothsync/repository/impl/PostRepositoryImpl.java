@@ -73,4 +73,9 @@ public class PostRepositoryImpl implements PostRepository {
     public List<Post> findAllByIds(List<Long> postIds) {
         return postJpaRepository.findAllByPostIdIn(postIds);
     }
+
+    @Override
+    public void incrementViewCount(Long postId, int delta){
+        postJpaRepository.incrementViewCount(postId,delta);
+    }
 }

@@ -127,10 +127,6 @@ public class Post extends BaseEntity {
         }
     }
 
-    public void incrementViewCount() {
-        this.viewCount++;
-    }
-
     public boolean isOwner(Long userId) {
         return this.userId.equals(userId);
     }

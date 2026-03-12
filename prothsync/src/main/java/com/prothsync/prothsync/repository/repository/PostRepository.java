@@ -27,4 +27,6 @@ public interface PostRepository {
     long count();
 
     List<Post> findAllByIds(List<Long> postIds);
+
+    void incrementViewCount(Long postId, int delta);
 }
