@@ -1,0 +1,18 @@
+.page-header{
+  padding:140px 3rem 60px;
+  text-align:center;
+  background:var(--warm-white);
+  border-bottom:1px solid var(--stone-light);
+  position:relative;
+  overflow:hidden;
+}
+.page-header::before{
+  content:'';position:absolute;top:-30%;right:-10%;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(196,152,74,.06) 0%,transparent 70%);pointer-events:none;
+}
+.page-header-inner{
+  max-width:720px;margin:0 auto;position:relative;z-index:1;
+}
+.page-header .section-title{
+  font-size:clamp(36px,4.5vw,52px);margin-bottom:.5rem;
+}

@@ -1,0 +1,25 @@
+.user-types{background:var(--charcoal);padding:6rem 3rem;position:relative;overflow:hidden}
+.user-types::before{content:'';position:absolute;top:-50%;right:-20%;width:800px;height:800px;background:radial-gradient(circle,rgba(196,152,74,.08) 0%,transparent 60%);pointer-events:none}
+.user-types .section-label{color:var(--gold-light)}
+.user-types .section-title{color:var(--warm-white)}
+.user-types .section-title em{color:var(--gold-light)}
+.user-types .section-desc{color:rgba(255,253,249,.5)}
+
+.ut-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+.ut-card{background:rgba(255,253,249,.05);border:1px solid rgba(255,253,249,.08);border-radius:var(--radius-lg);padding:2rem;text-align:center;transition:var(--transition);cursor:default;position:relative;overflow:hidden}
+.ut-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(196,152,74,.05));opacity:0;transition:var(--transition)}
+.ut-card:hover{background:rgba(255,253,249,.1);border-color:rgba(196,152,74,.3);transform:translateY(-4px)}
+.ut-card:hover::after{opacity:1}
+
+.ut-icon{width:72px;height:72px;border-radius:50%;margin:0 auto 1.25rem;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.ut-icon svg{width:32px;height:32px;stroke-width:1.5}
+.ut-clinic .ut-icon{background:rgba(45,138,126,.15)} .ut-clinic .ut-icon svg{stroke:var(--teal)}
+.ut-lab .ut-icon{background:rgba(212,119,90,.15)} .ut-lab .ut-icon svg{stroke:var(--coral)}
+.ut-tech .ut-icon{background:rgba(196,152,74,.15)} .ut-tech .ut-icon svg{stroke:var(--gold-light)}
+.ut-student .ut-icon{background:rgba(123,158,135,.15)} .ut-student .ut-icon svg{stroke:var(--sage)}
+
+.ut-title{font-size:18px;font-weight:600;color:var(--warm-white);margin-bottom:.5rem;position:relative;z-index:1}
+.ut-desc{font-size:13px;color:rgba(255,253,249,.45);line-height:1.7;position:relative;z-index:1}
+
+@media(max-width:1024px){.ut-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.ut-grid{grid-template-columns:1fr}}

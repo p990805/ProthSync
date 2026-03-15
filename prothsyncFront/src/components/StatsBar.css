@@ -1,0 +1,9 @@
+.stats-bar{padding:3rem;background:var(--warm-white);border-top:1px solid var(--stone-light);border-bottom:1px solid var(--stone-light)}
+.stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+.stat-item{text-align:center;padding:1rem}
+.stat-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;color:var(--charcoal);margin-bottom:4px}
+.stat-num span{color:var(--gold)}
+.stat-label{font-size:13px;color:var(--text-muted);font-weight:400;letter-spacing:.5px}
+
+@media(max-width:1024px){.stats-inner{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.stats-inner{grid-template-columns:1fr}}

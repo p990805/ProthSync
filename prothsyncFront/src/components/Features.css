@@ -1,0 +1,19 @@
+.features-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+.feature-card{background:var(--warm-white);border:1px solid var(--stone-light);border-radius:var(--radius-lg);padding:2.5rem;transition:var(--transition);position:relative;overflow:hidden;cursor:default}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.feature-card:hover::before{transform:scaleX(1)}
+.feature-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:transparent}
+
+.feature-icon{width:56px;height:56px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem}
+.feature-icon svg{width:28px;height:28px;stroke-width:1.5}
+.fi-portfolio{background:var(--teal-light)} .fi-portfolio svg{stroke:var(--teal)}
+.fi-outsource{background:var(--coral-light)} .fi-outsource svg{stroke:var(--coral)}
+.fi-location{background:var(--gold-bg)} .fi-location svg{stroke:var(--gold-dark)}
+.fi-community{background:var(--sage-light)} .fi-community svg{stroke:var(--sage)}
+
+.feature-title{font-size:20px;font-weight:600;color:var(--charcoal);margin-bottom:.75rem}
+.feature-desc{font-size:14px;color:var(--text-secondary);line-height:1.8}
+.feature-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:1.25rem}
+.feature-tags span{padding:4px 12px;background:var(--stone-light);border-radius:100px;font-size:11px;color:var(--text-secondary);font-weight:500}
+
+@media(max-width:1024px){.features-grid{grid-template-columns:1fr}}
