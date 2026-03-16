@@ -1,9 +1,7 @@
 package com.prothsync.prothsync.service;
 
 import com.prothsync.prothsync.dto.LoginRequestDTO;
-import com.prothsync.prothsync.dto.LoginResponseDTO;
 import com.prothsync.prothsync.dto.SignupRequestDTO;
-import com.prothsync.prothsync.dto.TokenRefreshResponseDTO;
 import com.prothsync.prothsync.entity.RefreshToken;
 import com.prothsync.prothsync.entity.user.User;
 import com.prothsync.prothsync.exception.AuthErrorCode;
@@ -13,6 +11,8 @@ import com.prothsync.prothsync.repository.repository.RefreshTokenRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import com.prothsync.prothsync.security.JwtTokenProvider;
 import com.prothsync.prothsync.service.GeocodingService.GeocodingResult;
+import com.prothsync.prothsync.vo.LoginResult;
+import com.prothsync.prothsync.vo.RefreshResult;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class AuthService {
     }
 
     @Transactional
-    public LoginResponseDTO login(LoginRequestDTO loginRequest) {
+    public LoginResult login(LoginRequestDTO loginRequest) {
         User user = userRepository.findByUserName(loginRequest.userName())
             .orElseThrow(() -> new BusinessException(AuthErrorCode.INVALID_CREDENTIALS));
 
@@ -76,7 +76,7 @@ public class AuthService {
 
         saveOrUpdateRefreshToken(user.getUserId(), refreshToken);
 
-        return LoginResponseDTO.of(
+        return new LoginResult(
             accessToken,
             refreshToken,
             user.getUserId(),
@@ -86,7 +86,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenRefreshResponseDTO refreshToken(String refreshTokenValue) {
+    public RefreshResult refreshToken(String refreshTokenValue) {
         if (!jwtTokenProvider.validateToken(refreshTokenValue)) {
             throw new BusinessException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
@@ -121,7 +121,7 @@ public class AuthService {
         storedToken.updateToken(newRefreshToken, jwtTokenProvider.getRefreshTokenExpiration());
         refreshTokenRepository.save(storedToken);
 
-        return TokenRefreshResponseDTO.of(newAccessToken, newRefreshToken);
+        return new RefreshResult(newAccessToken, newRefreshToken);
     }
 
     @Transactional

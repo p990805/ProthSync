@@ -1,10 +1,9 @@
 package com.prothsync.prothsync.dto;
 
 public record TokenRefreshResponseDTO(
-    String accessToken,
-    String refreshToken
+    String accessToken
 ) {
-    public static TokenRefreshResponseDTO of(String accessToken, String refreshToken) {
-        return new TokenRefreshResponseDTO(accessToken, refreshToken);
+    public static TokenRefreshResponseDTO of(String accessToken) {
+        return new TokenRefreshResponseDTO(accessToken);
     }
 }
