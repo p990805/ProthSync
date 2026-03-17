@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/useAuthStore';
 import './Auth.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
   const [form, setForm] = useState({ userName: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,6 +23,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // Set-Cookie 수신
         body: JSON.stringify(form),
       });
 
@@ -30,8 +33,14 @@ export default function LoginPage() {
       }
 
       const data = await res.json();
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+
+      // accessToken + user 정보만 인메모리 저장 (refreshToken은 Cookie에 자동 저장됨)
+      setAuth(data.accessToken, {
+        userId: data.userId,
+        userName: data.userName,
+        nickName: data.nickName,
+      });
+
       navigate('/');
     } catch (err) {
       setError(err.message);
