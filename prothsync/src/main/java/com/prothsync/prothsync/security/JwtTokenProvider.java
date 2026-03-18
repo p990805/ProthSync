@@ -37,13 +37,14 @@ public class JwtTokenProvider {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createAccessToken(Long userId, String userName, UserType userType) {
+    public String createAccessToken(Long userId, String userName, String nickName, UserType userType) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenExpiration);
 
         return Jwts.builder()
             .subject(String.valueOf(userId))
             .claim("userName", userName)
+            .claim("nickName", nickName)
             .claim("userType", userType.toString())
             .claim("tokenType", "ACCESS")
             .issuedAt(now)
@@ -126,8 +127,6 @@ public class JwtTokenProvider {
 
         return Duration.ofMillis(remainingMillis);
     }
-
-
 
     private Claims parseClaims(String token) {
         return Jwts.parser()
