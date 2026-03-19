@@ -203,3 +203,7 @@ http://localhost:8080/swagger-ui/index.html
 |            | `GET /api/admin/reports`                 | 신고 목록 조회     |
 
 ---
+
+## ERD
+
+![ERD](images/prothSyncERD.png)
