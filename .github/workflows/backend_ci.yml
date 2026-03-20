@@ -31,11 +31,10 @@ jobs:
 
       redis:
         image: redis:7-alpine
-        command: redis-server --requirepass testpass
         ports:
           - 6379:6379
         options: >-
-          --health-cmd="redis-cli -a testpass ping"
+          --health-cmd="redis-cli ping"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -73,7 +72,7 @@ jobs:
           POSTGRES_DB: prothsync_test
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
-          REDIS_PASSWORD: testpass
+          REDIS_PASSWORD: ""
           JWT_SECRET: ci-test-secret-key-that-is-long-enough-for-hmac-sha256
           KAKAO_REST_API_KEY: test-key
         run: ./gradlew build
