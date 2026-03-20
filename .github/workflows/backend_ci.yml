@@ -1,1 +1,88 @@
+name: Backend CI
 
+on:
+  pull_request:
+    branches: [master, dev]
+    paths:
+      - "prothsync/**"
+
+defaults:
+  run:
+    working-directory: prothsync
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: prothsync_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      # 1) 소스 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Java 17 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # 3) Gradle 캐시 (빌드 속도 향상)
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('prothsync/**/*.gradle*', 'prothsync/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 4) Gradle 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 5) 빌드 + 테스트 실행
+      - name: Build & Test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/prothsync_test
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: test
+          SPRING_DATA_REDIS_HOST: localhost
+          SPRING_DATA_REDIS_PORT: 6379
+          JWT_SECRET: ci-test-secret-key-that-is-long-enough-for-hmac-sha256
+          KAKAO_API_KEY: test-key
+        run: ./gradlew build
+
+      # 6) 테스트 결과 리포트 업로드 (실패 시 디버깅용)
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: prothsync/build/reports/tests/
+          retention-days: 7
