@@ -27,7 +27,7 @@ import org.hibernate.annotations.SQLRestriction;
 public class User extends BaseEntity {
 
     private static final Pattern EMAIL_PATTERN =
-        Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+        Pattern.compile("^[A-Za-z0-9+_]+([.-][A-Za-z0-9+_]+)*@[A-Za-z0-9]+([.-][A-Za-z0-9]+)*\\.[A-Za-z]{2,}$");
 
     private static final int BIO_MAX_LENGTH = 200;
 

@@ -31,10 +31,11 @@ jobs:
 
       redis:
         image: redis:7-alpine
+        command: redis-server --requirepass testpass
         ports:
           - 6379:6379
         options: >-
-          --health-cmd="redis-cli ping"
+          --health-cmd="redis-cli -a testpass ping"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -69,13 +70,12 @@ jobs:
       # 5) 빌드 + 테스트 실행
       - name: Build & Test
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/prothsync_test
-          SPRING_DATASOURCE_USERNAME: test
-          SPRING_DATASOURCE_PASSWORD: test
-          SPRING_DATA_REDIS_HOST: localhost
-          SPRING_DATA_REDIS_PORT: 6379
+          POSTGRES_DB: prothsync_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          REDIS_PASSWORD: testpass
           JWT_SECRET: ci-test-secret-key-that-is-long-enough-for-hmac-sha256
-          KAKAO_API_KEY: test-key
+          KAKAO_REST_API_KEY: test-key
         run: ./gradlew build
 
       # 6) 테스트 결과 리포트 업로드 (실패 시 디버깅용)
