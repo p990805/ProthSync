@@ -1,1 +1,46 @@
+name: Frontend CI
 
+on:
+  pull_request:
+    branches: [master, dev]
+    paths:
+      - "prothsyncFront/**"
+
+defaults:
+  run:
+    working-directory: prothsyncFront
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) 소스 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2) Node.js 설정
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: prothsyncFront/package-lock.json
+
+      # 3) 의존성 설치 (CI 환경에서는 npm ci 사용)
+      - name: Install dependencies
+        run: npm ci
+
+      # 4) 빌드 검증
+      - name: Build
+        run: npm run build
+
+      # ── 아래는 나중에 추가할 때 주석 해제 ──
+
+      # 5) ESLint (lint 설정 후 활성화)
+      # - name: Lint
+      #   run: npm run lint
+
+      # 6) 테스트 (Vitest 등 설정 후 활성화)
+      # - name: Test
+      #   run: npm run test

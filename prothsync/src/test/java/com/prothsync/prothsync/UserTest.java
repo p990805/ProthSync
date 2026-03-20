@@ -25,7 +25,7 @@ class UserTest {
     private static final LocalDate VALID_BIRTHDAY = LocalDate.of(1990, 1, 1);
     private static final String VALID_ADDRESS = "서울시 강남구 테헤란로 123";
     private static final String VALID_EMAIL = "test@example.com";
-    private static final UserType VALID_USER_TYPE = UserType.DENTIST;
+    private static final UserType VALID_USER_TYPE = UserType.DENTAL_CLINIC;
 
     @Nested
     @DisplayName("사용자 생성 테스트")
@@ -468,11 +468,11 @@ class UserTest {
                 VALID_BIRTHDAY,
                 VALID_ADDRESS,
                 VALID_EMAIL,
-                UserType.DENTIST
+                UserType.DENTAL_CLINIC
             );
 
             // then
-            assertThat(user.getUserType()).isEqualTo(UserType.DENTIST);
+            assertThat(user.getUserType()).isEqualTo(UserType.DENTAL_CLINIC);
         }
 
         @Test
@@ -486,11 +486,11 @@ class UserTest {
                 VALID_BIRTHDAY,
                 VALID_ADDRESS,
                 VALID_EMAIL,
-                UserType.DENTAL_LAB_OWNER
+                UserType.DENTAL_LAB
             );
 
             // then
-            assertThat(user.getUserType()).isEqualTo(UserType.DENTAL_LAB_OWNER);
+            assertThat(user.getUserType()).isEqualTo(UserType.DENTAL_LAB);
         }
 
         @Test
