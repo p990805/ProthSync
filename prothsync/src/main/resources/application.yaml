@@ -32,3 +32,15 @@ kakao:
   rest-api-key: ${KAKAO_REST_API_KEY}
   geocoding:
     base-url: https://dapi.kakao.com
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: prothsync

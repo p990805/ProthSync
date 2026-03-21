@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s      # 15초마다 메트릭 수집
+  evaluation_interval: 15s   # 15초마다 알림 규칙 평가
+
+scrape_configs:
+  - job_name: 'prothsync'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+        labels:
+          application: 'prothsync'
