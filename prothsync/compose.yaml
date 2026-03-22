@@ -27,6 +27,35 @@ services:
     volumes:
       - prothSync_redis_data:/data
 
+  prometheus:
+    image: 'prom/prometheus:latest'
+    container_name: prometheus-prothSync
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prothSync_prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - db-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: 'grafana/grafana:latest'
+    container_name: grafana-prothSync
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      TZ: ${TZ}
+    volumes:
+      - prothSync_grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - db-net
+    depends_on:
+      - prometheus
+
 networks:
   db-net:
     name: db-net
@@ -34,3 +63,5 @@ networks:
 volumes:
   prothSync_postgres_data:
   prothSync_redis_data:
+  prothSync_prometheus_data:
+  prothSync_grafana_data:
