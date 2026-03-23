@@ -49,6 +49,9 @@ services:
       TZ: ${TZ}
     volumes:
       - prothSync_grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning/dashboards/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
+      - ./monitoring/grafana/provisioning/dashboards/json:/var/lib/grafana/dashboards
     ports:
       - "3000:3000"
     networks:
