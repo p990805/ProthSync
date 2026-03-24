@@ -25,6 +25,7 @@ import com.prothsync.prothsync.repository.repository.CaseRequestRepository;
 import com.prothsync.prothsync.repository.repository.CommentRepository;
 import com.prothsync.prothsync.repository.repository.PostLikeRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
+import com.prothsync.prothsync.repository.repository.RefreshTokenRepository;
 import com.prothsync.prothsync.repository.repository.ReportRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
 import java.util.List;
@@ -48,6 +49,7 @@ public class AdminService {
     private final HashtagService hashtagService;
     private final PostImageService postImageService;
     private final CommentService commentService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional(readOnly = true)
     public PageResponse<ReportResponseDTO> getReports(ReportStatus status, Pageable pageable) {
@@ -110,6 +112,8 @@ public class AdminService {
 
         user.suspend(request.reason(), request.suspendUntil());
         userRepository.save(user);
+
+        refreshTokenRepository.deleteByUserId(userId);
 
         return AdminUserResponseDTO.from(user);
     }
