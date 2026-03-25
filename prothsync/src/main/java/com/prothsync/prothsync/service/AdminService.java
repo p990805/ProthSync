@@ -169,11 +169,7 @@ public class AdminService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new BusinessException(PostErrorCode.COMMENT_NOT_FOUND));
 
-        Post post = postRepository.findById(comment.getPostId())
-            .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
-
-        post.decrementCommentCount();
-        postRepository.save(post);
+        postRepository.decrementCommentCount(comment.getPostId());
 
         commentRepository.softDelete(comment, adminUserId);
     }
