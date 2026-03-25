@@ -31,20 +31,18 @@ public class LikeService {
 
         if (existingLike.isPresent()) {
             postLikeRepository.delete(existingLike.get());
-            post.decrementLikeCount();
-            postRepository.save(post);
-            return LikeResponseDTO.of(postId, false, post.getLikeCount());
+            postRepository.decrementLikeCount(postId);
+            return LikeResponseDTO.of(postId, false, post.getLikeCount() - 1);
         } else {
             blockService.validateNotBlocked(userId, post.getUserId());
             PostLike postLike = PostLike.create(userId, postId);
             postLikeRepository.save(postLike);
-            post.incrementLikeCount();
-            postRepository.save(post);
+            postRepository.incrementLikeCount(postId);
 
             notificationService.send(
-                NotificationType.LIKE,userId,post.getUserId(),postId, ReferenceType.POST
+                NotificationType.LIKE, userId, post.getUserId(), postId, ReferenceType.POST
             );
-            return LikeResponseDTO.of(postId, true, post.getLikeCount());
+            return LikeResponseDTO.of(postId, true, post.getLikeCount() + 1);
         }
     }
 

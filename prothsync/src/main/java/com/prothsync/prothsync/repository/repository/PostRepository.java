@@ -29,4 +29,7 @@ public interface PostRepository {
     List<Post> findAllByIds(List<Long> postIds);
 
     void incrementViewCount(Long postId, int delta);
+
+    void incrementLikeCount(Long postId);
+    void decrementLikeCount(Long postId);
 }

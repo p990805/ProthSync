@@ -78,4 +78,14 @@ public class PostRepositoryImpl implements PostRepository {
     public void incrementViewCount(Long postId, int delta){
         postJpaRepository.incrementViewCount(postId,delta);
     }
+
+    @Override
+    public void incrementLikeCount(Long postId){
+        postJpaRepository.incrementLikeCount(postId);
+    }
+
+    @Override
+    public void decrementLikeCount(Long postId){
+        postJpaRepository.decrementLikeCount(postId);
+    }
 }
