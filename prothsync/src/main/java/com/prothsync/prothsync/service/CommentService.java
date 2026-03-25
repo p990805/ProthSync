@@ -37,8 +37,7 @@ public class CommentService {
         Comment comment = Comment.createComment(postId, userId, request.content());
         Comment savedComment = commentRepository.save(comment);
 
-        post.incrementCommentCount();
-        postRepository.save(post);
+        postRepository.incrementCommentCount(postId);
 
         notificationService.send(
             NotificationType.COMMENT, userId, post.getUserId(),
@@ -76,9 +75,7 @@ public class CommentService {
         Comment comment = findCommentOrThrow(commentId);
         validateCommentOwner(comment, userId);
 
-        Post post = findPostOrThrow(comment.getPostId());
-        post.decrementCommentCount();
-        postRepository.save(post);
+        postRepository.decrementCommentCount(comment.getPostId());
 
         commentRepository.softDelete(comment, userId);
     }
