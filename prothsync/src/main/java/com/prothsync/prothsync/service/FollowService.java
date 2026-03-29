@@ -41,25 +41,21 @@ public class FollowService {
 
         if (existingFollow.isPresent()) {
             followRepository.delete(existingFollow.get());
-            follower.decrementFollowingCount();
-            following.decrementFollowerCount();
-            userRepository.save(follower);
-            userRepository.save(following);
-            return FollowResponseDTO.of(followingId, false, following.getFollowerCount());
+            userRepository.decrementFollowingCount(followerId);
+            userRepository.decrementFollowerCount(followingId);
+            return FollowResponseDTO.of(followingId, false, following.getFollowerCount() - 1);
         } else {
             blockService.validateNotBlocked(followerId, followingId);
             Follow follow = Follow.create(followerId, followingId);
             followRepository.save(follow);
-            follower.incrementFollowingCount();
-            following.incrementFollowerCount();
-            userRepository.save(follower);
-            userRepository.save(following);
+            userRepository.incrementFollowingCount(followerId);
+            userRepository.incrementFollowerCount(followingId);
 
             notificationService.send(
                 NotificationType.FOLLOW, followerId, followingId,
                 followerId, ReferenceType.USER);
 
-            return FollowResponseDTO.of(followingId, true, following.getFollowerCount());
+            return FollowResponseDTO.of(followingId, true, following.getFollowerCount() + 1);
         }
     }
 

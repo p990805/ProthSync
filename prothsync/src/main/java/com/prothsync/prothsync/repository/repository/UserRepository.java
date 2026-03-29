@@ -29,4 +29,9 @@ public interface UserRepository {
     Page<User> findAll(Pageable pageable);
 
     long count();
+
+    void incrementFollowerCount(Long userId);
+    void decrementFollowerCount(Long userId);
+    void incrementFollowingCount(Long userId);
+    void decrementFollowingCount(Long userId);
 }
