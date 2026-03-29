@@ -111,13 +111,8 @@ public class BlockService {
         Optional<Follow> follow = followRepository.findByFollowerIdAndFollowingId(followerId, followingId);
         if (follow.isPresent()) {
             followRepository.delete(follow.get());
-
-            User follower = findUserOrThrow(followerId);
-            User following = findUserOrThrow(followingId);
-            follower.decrementFollowingCount();
-            following.decrementFollowerCount();
-            userRepository.save(follower);
-            userRepository.save(following);
+            userRepository.decrementFollowingCount(followerId);
+            userRepository.decrementFollowerCount(followingId);
         }
     }
 

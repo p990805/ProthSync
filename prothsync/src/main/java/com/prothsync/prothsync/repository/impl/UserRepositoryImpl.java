@@ -89,4 +89,24 @@ public class UserRepositoryImpl implements UserRepository {
     public long count() {
         return userJpaRepository.count();
     }
+
+    @Override
+    public void incrementFollowerCount(Long userId) {
+        userJpaRepository.incrementFollowerCount(userId);
+    }
+
+    @Override
+    public void decrementFollowerCount(Long userId) {
+        userJpaRepository.decrementFollowerCount(userId);
+    }
+
+    @Override
+    public void incrementFollowingCount(Long userId) {
+        userJpaRepository.incrementFollowingCount(userId);
+    }
+
+    @Override
+    public void decrementFollowingCount(Long userId) {
+        userJpaRepository.decrementFollowingCount(userId);
+    }
 }
