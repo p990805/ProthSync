@@ -24,6 +24,9 @@ public interface PostRepository {
 
     Page<Post> findAllByHashtagIdAndVisibilityPublic(Long hashtagId, Pageable pageable);
 
+    Page<Post> findAllByHashtagIdAndVisibilityPublicExcludingBlockedUsers(
+        Long hashtagId, Long currentUserId, Pageable pageable);
+
     long count();
 
     List<Post> findAllByIds(List<Long> postIds);

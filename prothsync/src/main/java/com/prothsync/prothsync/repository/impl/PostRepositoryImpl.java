@@ -65,6 +65,13 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
+    public Page<Post> findAllByHashtagIdAndVisibilityPublicExcludingBlockedUsers(
+        Long hashtagId, Long currentUserId, Pageable pageable) {
+        return postJpaRepository.findAllByHashtagIdAndVisibilityPublicExcludingBlockedUsers(
+            hashtagId, currentUserId, pageable);
+    }
+
+    @Override
     public long count() {
         return postJpaRepository.count();
     }

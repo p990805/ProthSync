@@ -37,6 +37,22 @@ public interface PostJpaRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByHashtagIdAndVisibilityPublic(
         @Param("hashtagId") Long hashtagId, Pageable pageable);
 
+    @Query("""
+        SELECT p FROM Post p
+        WHERE p.postId IN (
+            SELECT ph.postId FROM PostHashtag ph WHERE ph.hashtagId = :hashtagId
+        )
+        AND p.visibility = 'PUBLIC'
+        AND p.userId NOT IN (
+            SELECT b.blockedId FROM Block b WHERE b.blockerId = :currentUserId
+        )
+        ORDER BY p.createdAt DESC
+        """)
+    Page<Post> findAllByHashtagIdAndVisibilityPublicExcludingBlockedUsers(
+        @Param("hashtagId") Long hashtagId,
+        @Param("currentUserId") Long currentUserId,
+        Pageable pageable);
+
     List<Post> findAllByPostIdIn(List<Long> postIds);
 
     @Modifying

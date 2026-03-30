@@ -26,6 +26,9 @@ public interface UserRepository {
 
     Page<User> searchByNickName(String keyword, Pageable pageable);
 
+    Page<User> searchByNickNameExcludingBlockedUsers(
+        String keyword, Long currentUserId, Pageable pageable);
+
     Page<User> findAll(Pageable pageable);
 
     long count();

@@ -108,6 +108,18 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     Page<User> findByNickNameContainingIgnoreCase(String keyword, Pageable pageable);
 
+    @Query("""
+        SELECT u FROM User u
+        WHERE LOWER(u.nickName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        AND u.userId NOT IN (
+            SELECT b.blockedId FROM Block b WHERE b.blockerId = :currentUserId
+        )
+        """)
+    Page<User> searchByNickNameExcludingBlockedUsers(
+        @Param("keyword") String keyword,
+        @Param("currentUserId") Long currentUserId,
+        Pageable pageable);
+
     Page<User> findAll(Pageable pageable);
 
     @Modifying

@@ -81,6 +81,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Page<User> searchByNickNameExcludingBlockedUsers(
+        String keyword, Long currentUserId, Pageable pageable) {
+        return userJpaRepository.searchByNickNameExcludingBlockedUsers(keyword, currentUserId, pageable);
+    }
+
+    @Override
     public Page<User> findAll(Pageable pageable) {
         return userJpaRepository.findAll(pageable);
     }
