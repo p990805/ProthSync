@@ -10,7 +10,6 @@ import com.prothsync.prothsync.exception.BusinessException;
 import com.prothsync.prothsync.exception.PostErrorCode;
 import com.prothsync.prothsync.exception.SearchErrorCode;
 import com.prothsync.prothsync.global.PageResponse;
-import com.prothsync.prothsync.repository.repository.BlockRepository;
 import com.prothsync.prothsync.repository.repository.HashtagRepository;
 import com.prothsync.prothsync.repository.repository.PostRepository;
 import com.prothsync.prothsync.repository.repository.UserRepository;
@@ -33,7 +32,6 @@ public class SearchService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostImageService postImageService;
-    private final BlockRepository blockRepository;
 
     public PageResponse<HashtagResponseDTO> searchHashtags(String keyword, Pageable pageable) {
         validateKeyword(keyword);
@@ -58,22 +56,22 @@ public class SearchService {
         Hashtag hashtag = hashtagRepository.findByTagName(normalizedName)
             .orElseThrow(() -> new BusinessException(PostErrorCode.HASHTAG_NOT_FOUND));
 
-        Page<Post> postPage = postRepository.findAllByHashtagIdAndVisibilityPublic(
-            hashtag.getHashtagId(), pageable);
+        Page<Post> postPage;
+        if (currentUserId != null) {
+            postPage = postRepository.findAllByHashtagIdAndVisibilityPublicExcludingBlockedUsers(
+                hashtag.getHashtagId(), currentUserId, pageable);
+        } else {
+            postPage = postRepository.findAllByHashtagIdAndVisibilityPublic(
+                hashtag.getHashtagId(), pageable);
+        }
 
-        List<Long> blockedIds = getBlockedIds(currentUserId);
-
-        List<Post> filteredPosts = postPage.getContent().stream()
-            .filter(post -> !blockedIds.contains(post.getUserId()))
-            .toList();
-
-        List<Long> postIds = filteredPosts.stream()
+        List<Long> postIds = postPage.getContent().stream()
             .map(Post::getPostId)
             .toList();
 
         Map<Long, String> thumbnailMap = postImageService.getThumbnailUrls(postIds);
 
-        List<PostSummaryResponseDTO> summaries = filteredPosts.stream()
+        List<PostSummaryResponseDTO> summaries = postPage.getContent().stream()
             .map(post -> PostSummaryResponseDTO.of(
                 post, thumbnailMap.get(post.getPostId())))
             .toList();
@@ -81,19 +79,20 @@ public class SearchService {
         return PageResponse.of(summaries, postPage);
     }
 
-
-
     public PageResponse<UserSearchResponseDTO> searchUsers(
         String keyword, Long currentUserId, Pageable pageable) {
 
         validateKeyword(keyword);
 
-        Page<User> userPage = userRepository.searchByNickName(keyword.trim(), pageable);
-
-        List<Long> blockedIds = getBlockedIds(currentUserId);
+        Page<User> userPage;
+        if (currentUserId != null) {
+            userPage = userRepository.searchByNickNameExcludingBlockedUsers(
+                keyword.trim(), currentUserId, pageable);
+        } else {
+            userPage = userRepository.searchByNickName(keyword.trim(), pageable);
+        }
 
         List<UserSearchResponseDTO> users = userPage.getContent().stream()
-            .filter(user -> !blockedIds.contains(user.getUserId()))
             .map(UserSearchResponseDTO::from)
             .toList();
 
@@ -113,12 +112,5 @@ public class SearchService {
         return keyword.trim()
             .replaceAll("^#+", "")
             .toLowerCase();
-    }
-
-    private List<Long> getBlockedIds(Long currentUserId) {
-        if (currentUserId == null) {
-            return List.of();
-        }
-        return blockRepository.findBlockedIdsByBlockerId(currentUserId);
     }
 }
