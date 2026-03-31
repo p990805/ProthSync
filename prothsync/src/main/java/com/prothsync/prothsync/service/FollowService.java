@@ -7,6 +7,7 @@ import com.prothsync.prothsync.entity.notification.ReferenceType;
 import com.prothsync.prothsync.entity.user.Follow;
 import com.prothsync.prothsync.entity.user.User;
 import com.prothsync.prothsync.exception.BusinessException;
+import com.prothsync.prothsync.exception.FollowErrorCode;
 import com.prothsync.prothsync.exception.UserErrorCode;
 import com.prothsync.prothsync.global.PageResponse;
 import com.prothsync.prothsync.repository.repository.FollowRepository;
@@ -33,6 +34,10 @@ public class FollowService {
 
     @Transactional
     public FollowResponseDTO toggleFollow(Long followerId, Long followingId) {
+        if (followerId.equals(followingId)) {
+            throw new BusinessException(FollowErrorCode.CANNOT_FOLLOW_SELF);
+        }
+
         User follower = findUserOrThrow(followerId);
         User following = findUserOrThrow(followingId);
 
