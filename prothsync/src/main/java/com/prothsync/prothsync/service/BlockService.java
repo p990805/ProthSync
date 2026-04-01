@@ -34,6 +34,10 @@ public class BlockService {
 
     @Transactional
     public BlockResponseDTO block(Long blockerId, Long blockedId) {
+        if (blockerId.equals(blockedId)) {
+            throw new BusinessException(BlockErrorCode.CANNOT_BLOCK_SELF);
+        }
+
         findUserOrThrow(blockerId);
         findUserOrThrow(blockedId);
 
