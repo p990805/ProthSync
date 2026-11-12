@@ -42,3 +42,7 @@ out/
 
 ### .http
 .http
+
+### Application logs
+logs/*
+!logs/.gitkeep

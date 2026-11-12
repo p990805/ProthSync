@@ -250,6 +250,14 @@ Authorization: Bearer {{token1}}
 POST {{baseUrl}}/api/users/{{userId3}}/follow
 Authorization: Bearer {{token1}}
 
+### 6-2-1. 사용자1 → 사용자4 팔로우
+POST {{baseUrl}}/api/users/{{userId4}}/follow
+Authorization: Bearer {{token1}}
+
+#### 6-2-1. 사용자1 → 사용자5 팔로우
+#POST {{baseUrl}}/api/users/{{userId5}}/follow
+#Authorization: Bearer {{token1}}
+
 ### 6-3. 사용자2 → 사용자1 맞팔로우
 POST {{baseUrl}}/api/users/{{userId1}}/follow
 Authorization: Bearer {{token2}}

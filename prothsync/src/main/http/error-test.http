@@ -1,0 +1,51 @@
+@baseUrl = http://localhost:8080
+# error-test 프로필을 활성화하고 Access Token을 입력하세요. 실제 토큰은 커밋하지 마세요.
+@accessToken = REPLACE_WITH_ACCESS_TOKEN
+
+### 시나리오 목록 (오류를 발생시키지 않음)
+GET {{baseUrl}}/api/test/errors
+Authorization: Bearer {{accessToken}}
+
+### 일반 런타임 오류: 500 / ERROR
+POST {{baseUrl}}/api/test/errors/RUNTIME
+Authorization: Bearer {{accessToken}}
+
+### NullPointerException: 500 / ERROR
+POST {{baseUrl}}/api/test/errors/NULL_POINTER
+Authorization: Bearer {{accessToken}}
+
+### 0으로 나누기: 500 / ERROR
+POST {{baseUrl}}/api/test/errors/ARITHMETIC
+Authorization: Bearer {{accessToken}}
+
+### DB 연결 실패 (모의): 500 / ERROR
+POST {{baseUrl}}/api/test/errors/DATABASE_CONNECTION
+Authorization: Bearer {{accessToken}}
+
+### DB 제약 조건 위반 (모의): 500 / ERROR
+POST {{baseUrl}}/api/test/errors/DATABASE_CONSTRAINT
+Authorization: Bearer {{accessToken}}
+
+### Redis 연결 실패 (모의): 500 / ERROR
+POST {{baseUrl}}/api/test/errors/REDIS_CONNECTION
+Authorization: Bearer {{accessToken}}
+
+### 외부 API 타임아웃 (모의, 실제 대기 없음): 504 / ERROR
+POST {{baseUrl}}/api/test/errors/EXTERNAL_TIMEOUT
+Authorization: Bearer {{accessToken}}
+
+### 중첩 원인 예외: 500 / ERROR
+POST {{baseUrl}}/api/test/errors/NESTED_CAUSE
+Authorization: Bearer {{accessToken}}
+
+### 잘못된 입력: 400 / WARN
+POST {{baseUrl}}/api/test/errors/BAD_REQUEST
+Authorization: Bearer {{accessToken}}
+
+### 경고만 기록: 200 / WARN
+POST {{baseUrl}}/api/test/errors/WARN_ONLY
+Authorization: Bearer {{accessToken}}
+
+### 예외 없이 ERROR 로그만 기록: 200 / ERROR
+POST {{baseUrl}}/api/test/errors/ERROR_LOG_ONLY
+Authorization: Bearer {{accessToken}}

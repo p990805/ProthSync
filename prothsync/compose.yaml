@@ -21,7 +21,7 @@ services:
     environment:
       TZ: ${TZ}
     ports:
-      - "6379:6379"
+      - "6380:6379"
     networks:
       - db-net
     volumes:
@@ -39,6 +39,39 @@ services:
       - db-net
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  loki:
+    image: 'grafana/loki:3.7.9'
+    container_name: loki-prothSync
+    command: -config.file=/etc/loki/config.yaml
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/loki/config.yaml:/etc/loki/config.yaml:ro
+      - prothSync_loki_data:/loki
+    ports:
+      - "127.0.0.1:3100:3100"
+    networks:
+      - db-net
+
+  alloy:
+    image: 'grafana/alloy:v1.21.3'
+    container_name: alloy-prothSync
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - ${LOG_DIR:-./logs}:/var/log/prothsync:ro
+      - prothSync_alloy_data:/var/lib/alloy/data
+    ports:
+      - "127.0.0.1:12345:12345"
+    networks:
+      - db-net
+    depends_on:
+      - loki
 
   grafana:
     image: 'grafana/grafana:latest'
@@ -58,6 +91,7 @@ services:
       - db-net
     depends_on:
       - prometheus
+      - loki
 
 networks:
   db-net:
@@ -68,3 +102,5 @@ volumes:
   prothSync_redis_data:
   prothSync_prometheus_data:
   prothSync_grafana_data:
+  prothSync_loki_data:
+  prothSync_alloy_data:

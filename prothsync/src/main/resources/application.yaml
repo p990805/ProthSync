@@ -20,7 +20,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6379
+      port: 6380
       password: ${REDIS_PASSWORD}
 
 jwt:
@@ -32,6 +32,24 @@ kakao:
   rest-api-key: ${KAKAO_REST_API_KEY}
   geocoding:
     base-url: https://dapi.kakao.com
+
+logging:
+  file:
+    name: ${LOG_DIR:./logs}/prothsync.json
+  structured:
+    format:
+      file: logstash
+    json:
+      add:
+        service_name: prothsync
+        environment: ${APP_ENV:local}
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_DIR:./logs}/archive/prothsync.%d{yyyy-MM-dd}.%i.json.gz
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 1GB
+      clean-history-on-start: true
 
 management:
   endpoints:
