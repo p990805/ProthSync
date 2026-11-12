@@ -1,0 +1,49 @@
+logging {
+  level = "info"
+}
+
+// The host application writes one complete JSON object per line.
+// Read only the active file; compressed archives are for local investigation.
+loki.source.file "prothsync" {
+  targets = [{
+    __path__     = "/var/log/prothsync/prothsync.json",
+    service_name = "prothsync",
+  }]
+  forward_to = [loki.process.prothsync.receiver]
+
+  file_match {
+    enabled = true
+  }
+}
+
+loki.process "prothsync" {
+  stage.json {
+    expressions = {
+      timestamp   = "\"@timestamp\"",
+      level       = "level",
+      environment = "environment",
+    }
+  }
+
+  stage.timestamp {
+    source            = "timestamp"
+    format            = "RFC3339Nano"
+    action_on_failure = "skip"
+  }
+
+  // Keep labels bounded. Messages, stack traces and request IDs stay in JSON.
+  stage.labels {
+    values = {
+      level       = "",
+      environment = "",
+    }
+  }
+
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

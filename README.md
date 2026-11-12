@@ -29,7 +29,7 @@ ProthSync는 치과의사, 기공소, 기공사, 학생 등 치과 산업 종사
 | **Database**     | PostgreSQL 18, Spring Data JPA (Hibernate) |
 | **Cache**        | Redis 7                                    |
 | **API Docs**     | SpringDoc OpenAPI (Swagger UI)             |
-| **Monitoring**   | Spring AOP (실행 시간 로깅)                |
+| **Monitoring**   | Prometheus, Grafana, Loki, Grafana Alloy, Spring AOP |
 | **External API** | Kakao Geocoding API                        |
 | **Infra**        | Docker Compose                             |
 | **Build**        | Gradle                                     |
@@ -125,6 +125,8 @@ ProthSync는 치과의사, 기공소, 기공사, 학생 등 치과 산업 종사
 ---
 
 ## 시작하기
+
+로그 수집 실행 방법과 향후 n8n 연동 경로는 [모니터링 가이드](prothsync/monitoring/README.md)를 참고하세요.
 
 ### 사전 요구사항
 

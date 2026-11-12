@@ -53,6 +53,19 @@ dependencies {
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 }
 
+// Boot logging is JVM-wide. Keep the logging smoke test in its own worker so
+// other Spring contexts cannot reuse its configuration (or lose their appenders).
+def structuredLoggingTest = tasks.register('structuredLoggingTest', Test) {
+	description = 'Verifies structured file logging in an isolated JVM.'
+	group = 'verification'
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+	useJUnitPlatform()
+	include 'com/prothsync/prothsync/config/StructuredLoggingTest.class'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
+	exclude 'com/prothsync/prothsync/config/StructuredLoggingTest.class'
+	dependsOn structuredLoggingTest
 }

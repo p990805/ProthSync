@@ -58,10 +58,10 @@ public class ExecutionTimeConfig {
             if (attributes != null) {
                 log.error("[{}] {} {} - Failed after {}ms - Error: {}",
                     httpMethod, requestUri, methodName, executionTime,
-                    throwable.getMessage());
+                    throwable.getMessage(), throwable);
             } else {
                 log.error("{} - Failed after {}ms - Error: {}",
-                    methodName, executionTime, throwable.getMessage());
+                    methodName, executionTime, throwable.getMessage(), throwable);
             }
 
             throw throwable;
